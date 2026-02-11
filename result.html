@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AI 준비도 테스트 결과 | 보험연수원</title>
+  
+  <!-- Default OG tags - will be overridden by Vercel Edge for dynamic sharing -->
+  <meta property="og:title" content="우리 회사 AI 준비도 테스트 결과" id="og-title">
+  <meta property="og:description" content="AI 기본법 시행 전, 우리 회사의 AI 도입 준비 수준을 확인하세요." id="og-desc">
+  <meta property="og:image" content="https://kiiisworking.vercel.app/og/type1.png" id="og-image">
+  <meta property="og:url" content="https://kiiisworking.vercel.app/result" id="og-url">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="우리 회사 AI 준비도 테스트 결과" id="tw-title">
+  <meta name="twitter:description" content="AI 기본법 시행 전, 우리 회사의 AI 도입 준비 수준을 확인하세요." id="tw-desc">
+  <meta name="twitter:image" content="https://kiiisworking.vercel.app/og/type1.png" id="tw-image">
+  
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+    *{font-family:'Pretendard Variable','Pretendard',-apple-system,'Apple SD Gothic Neo',sans-serif;-webkit-tap-highlight-color:transparent;box-sizing:border-box}
+    html,body{min-height:100vh;margin:0;padding:0}
+    #root{min-height:100vh}
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+/* ── Data ── */
+const types = [
+  {
+    id: 1, tier: "AI Leader", score: "42-48점", emoji: "🚀",
+    typeName: "이미 이륙한 회사",
+    tagline: "남들이 활주로 찾을 때, 이미 날고 있는 조직",
+    ogTitle: "우리 회사는 [이미 이륙한 회사 🚀] 타입!",
+    ogDesc: "AI 준비도 상위 5%. 전 영역 업계 평균 상회. 당신의 회사는?",
+    shareText: '우리 회사 AI 준비도 해봤는데 "이미 이륙한 회사"래 🚀 너네 회사도 해봐 →',
+    accent: "#E8590C", accentSoft: "rgba(232,89,12,0.08)", accentGlow: "rgba(232,89,12,0.12)",
+    heroBg: "linear-gradient(160deg, #FFF7F3 0%, #FFE8DC 50%, #FFDCC8 100%)",
+    weakArea: null, weakLabel: null,
+    benchmarkPosition: "업계 상위 5% 수준입니다. AI 전담 조직과 거버넌스 체계를 모두 갖춘 선도 그룹에 해당합니다.",
+    insight: "이미 실행 단계에 진입한 조직입니다. 다음 과제는 AI 성과를 비즈니스 KPI와 연동하고, 조직 전체의 AI 리터러시를 '활용'에서 '혁신'으로 끌어올리는 것입니다.",
+    regulatoryPoint: "AI 기본법 시행(2026.1.22)에 따른 고위험 AI 분류 체계와 EIOPA 2025 '필수 인프라' 기준을 이미 충족. 글로벌 규제 변화(EU AI Act 등)에 대한 선제 대응이 차별화 포인트가 됩니다.",
+    domains: [
+      { name: "규제 대응력", score: 95, avg: 45, icon: "⚖️" },
+      { name: "기술 인프라", score: 90, avg: 52, icon: "🔧" },
+      { name: "AI 거버넌스", score: 85, avg: 38, icon: "🛡️" },
+      { name: "조직·인재", score: 88, avg: 41, icon: "👥" },
+      { name: "활용 수준", score: 92, avg: 48, icon: "📈" },
+    ],
+    courses: [
+      { code: "AI-AMP", name: "AI 고위 임원 과정", level: "고급", match: "전략 의사결정" },
+      { code: "AI-인사이트", name: "보험산업 AI 동향 파악부터 서비스 기획까지", level: "고급", match: "서비스 혁신" },
+      { code: "AI-공공직무", name: "AI로 사업기획, 벤치마킹 조사, 기획서 작성까지", level: "중급", match: "실무 고도화" },
+    ],
+    cta: "고급 과정 확인하기",
+  },
+  {
+    id: 2, tier: "AI Ready", score: "32-41점", emoji: "🛫",
+    typeName: "활주로 위에 선 회사",
+    tagline: "엔진은 켰는데, 이륙 허가를 기다리는 중",
+    ogTitle: "우리 회사는 [활주로 위에 선 회사 🛫] 타입!",
+    ogDesc: "방향은 잡았지만 실행이 남았다면? 취약 포인트를 찾아보세요.",
+    shareText: '우리 회사 "활주로 위에 선 회사"래 🛫 방향만 잡고 이륙은 안 했다는 뜻ㅋㅋ 너네는? →',
+    accent: "#1971C2", accentSoft: "rgba(25,113,194,0.07)", accentGlow: "rgba(25,113,194,0.10)",
+    heroBg: "linear-gradient(160deg, #F5F9FF 0%, #DCEEFB 50%, #C8E3FA 100%)",
+    weakArea: "AI 거버넌스", weakLabel: "개선 필요",
+    benchmarkPosition: "국내 보험사 상위 20% 수준입니다. 전략 수립은 완료했으나, 실행 단계에서 정체된 조직이 많은 구간입니다.",
+    insight: "AI 기본법, 7대 원칙... 들어는 봤는데 와닿지 않는 건 당연합니다. 하지만 이제 '몰랐어요'는 면책 사유가 되지 않습니다. 거버넌스 체계 수립이 가장 시급한 과제입니다.",
+    regulatoryPoint: "EIOPA 2025 보고서에 따르면 AI는 '실험'이 아닌 '필수 인프라'입니다. 금융위 AI 7대 원칙(2024.12)은 내부통제 체계를 요구하며, 이를 갖추지 못한 조직은 규제 리스크에 노출됩니다.",
+    domains: [
+      { name: "규제 대응력", score: 75, avg: 45, icon: "⚖️" },
+      { name: "기술 인프라", score: 60, avg: 52, icon: "🔧" },
+      { name: "AI 거버넌스", score: 42, avg: 38, icon: "🛡️", weak: true },
+      { name: "조직·인재", score: 72, avg: 41, icon: "👥" },
+      { name: "활용 수준", score: 58, avg: 48, icon: "📈" },
+    ],
+    courses: [
+      { code: "AI-데이터분석", name: "Copilot, GPT로 Excel 데이터 분석 활용하기", level: "중급", match: "데이터 역량" },
+      { code: "AI-공공직무", name: "AI로 사업기획, 벤치마킹 조사, 기획서 작성까지", level: "중급", match: "기획력 강화" },
+      { code: "AI-인사이트", name: "보험산업 AI 동향 파악부터 서비스 기획까지", level: "고급", match: "전략 수립" },
+    ],
+    cta: "취약 영역 보완 과정 보기",
+  },
+  {
+    id: 3, tier: "AI Exploring", score: "22-31점", emoji: "🎫",
+    typeName: "탑승권은 끊은 회사",
+    tagline: "AI행 티켓은 샀는데, 게이트를 못 찾는 중",
+    ogTitle: "우리 회사는 [탑승권은 끊은 회사 🎫] 타입!",
+    ogDesc: "AI, 뭐부터 할지 모르겠다면? 5개 영역 우선순위를 알려드립니다.",
+    shareText: '우리 회사 "탑승권은 끊은 회사"래 🎫 AI 해야 되는 건 아는데 뭘 해야 하는지 모른대ㅋㅋ →',
+    accent: "#2F9E44", accentSoft: "rgba(47,158,68,0.07)", accentGlow: "rgba(47,158,68,0.10)",
+    heroBg: "linear-gradient(160deg, #F4FFF4 0%, #D5F5D5 50%, #BDE8BD 100%)",
+    weakArea: "기술 인프라", weakLabel: "개선 필요",
+    benchmarkPosition: "국내 보험사 평균 수준입니다. 많은 회사들이 챗봇·RPA 수준에 머물러 있는 구간입니다.",
+    insight: "AI 기본법 시행(2026.1.22)으로 '해야 함'에서 '안 하면 안 됨'으로 전환되었습니다. 경영진 신년사에 AI를 언급했다면, 이제 구체적인 실행 체계가 뒤따라야 합니다.",
+    regulatoryPoint: "금융위 AI 7대 원칙은 투명성, 공정성, 책임성 등 내부통제 체계를 요구합니다. 규제 대응 로드맵 수립이 최우선 과제이며, EIOPA는 이를 '경영진 책임' 영역으로 명시하고 있습니다.",
+    domains: [
+      { name: "규제 대응력", score: 42, avg: 45, icon: "⚖️" },
+      { name: "기술 인프라", score: 30, avg: 52, icon: "🔧", weak: true },
+      { name: "AI 거버넌스", score: 35, avg: 38, icon: "🛡️" },
+      { name: "조직·인재", score: 48, avg: 41, icon: "👥" },
+      { name: "활용 수준", score: 38, avg: 48, icon: "📈" },
+    ],
+    courses: [
+      { code: "AI-데이터분석", name: "ChatGPT로 코딩 없이 데이터 분석하기", level: "초급", match: "데이터 입문" },
+      { code: "AI-문건", name: "보험사를 위한 AI 활용 문건 작성부터 활용까지", level: "초급", match: "실무 자동화" },
+      { code: "AI-마케팅", name: "생성형 AI로 실시간 트렌드 따라잡기", level: "초급", match: "트렌드 파악" },
+    ],
+    cta: "지금 시작할 수 있는 과정 보기",
+  },
+  {
+    id: 4, tier: "AI Starting", score: "12-21점", emoji: "🪑",
+    typeName: "아직 공항 밖인 회사",
+    tagline: "AI행 비행기가 있다는 건 들었는데… 공항이 어디죠?",
+    ogTitle: "우리 회사는 [아직 공항 밖인 회사 🪑] 타입!",
+    ogDesc: "지금 시작해도 늦지 않습니다. AI 기본법 시행, 어디서부터 준비할까요?",
+    shareText: '우리 회사 "아직 공항 밖"이래 🪑 AI 비행기가 있다는 건 들었는데 공항을 모른대ㅋㅋ 너네는? →',
+    accent: "#7048E8", accentSoft: "rgba(112,72,232,0.06)", accentGlow: "rgba(112,72,232,0.10)",
+    heroBg: "linear-gradient(160deg, #F9F5FF 0%, #E8DEFF 50%, #D8CAFF 100%)",
+    weakArea: "규제 대응력", weakLabel: "시급",
+    benchmarkPosition: "업계 하위 25% 수준입니다. AI 관련 준비가 전반적으로 초기 단계이며, 규제 대응부터 시작해야 합니다.",
+    insight: "디지털 전환이 'PDF로 바꾸는 것'에 머물러 있다면, AI 기본법 시행은 상당한 부담이 될 수 있습니다. 하지만 지금 시작하면 1년 안에 업계 평균까지 도달할 수 있습니다.",
+    regulatoryPoint: "AI 기본법은 금융권에 AI 시스템의 투명성과 설명가능성을 요구합니다. ①규제 현황 파악 ②내부 AI 활용 현황 점검 ③로드맵 수립 순으로 접근하는 것을 권고드립니다.",
+    domains: [
+      { name: "규제 대응력", score: 18, avg: 45, icon: "⚖️", weak: true },
+      { name: "기술 인프라", score: 22, avg: 52, icon: "🔧" },
+      { name: "AI 거버넌스", score: 15, avg: 38, icon: "🛡️" },
+      { name: "조직·인재", score: 25, avg: 41, icon: "👥" },
+      { name: "활용 수준", score: 20, avg: 48, icon: "📈" },
+    ],
+    courses: [
+      { code: "AI-글작성", name: "생성형 AI로 브리핑 자료 작성 자동화하기", level: "초급", match: "업무 자동화" },
+      { code: "AI-마케팅", name: "생성형 AI로 실시간 트렌드 따라잡기", level: "초급", match: "AI 첫걸음" },
+      { code: "AI-Agent", name: "Google Gems, Opal로 나만의 AI 비서 만들기", level: "초급", match: "생산성 향상" },
+    ],
+    cta: "입문 과정부터 시작하기",
+  },
+];
+
+const industryStats = [
+  { label: "AI 도입 보험사", value: "32개사" },
+  { label: "삼성화재 자동심사", value: "장기보험 90%+" },
+  { label: "교보생명 지급기간", value: "업계평균 50%↓" },
+  { label: "IT예산 AI 비중", value: "67% 자동화" },
+];
+
+const KIIIS_URL = "https://www.in.or.kr";
+const BASE_URL = "https://kiiisworking.vercel.app";
+
+/* ── Glass Card ── */
+const glass = {
+  background: "rgba(255,255,255,0.72)",
+  backdropFilter: "blur(16px)",
+  WebkitBackdropFilter: "blur(16px)",
+  borderRadius: 20,
+  border: "1px solid rgba(255,255,255,0.6)",
+  boxShadow: "0 2px 16px rgba(0,0,0,0.04), 0 0.5px 0 rgba(255,255,255,0.8) inset",
+};
+
+/* ── Shared Components ── */
+function DomainBar({ domain, accent }) {
+  const [w, setW] = useState(0);
+  useEffect(() => { const id = setTimeout(() => setW(domain.score), 100); return () => clearTimeout(id); }, [domain.score]);
+  const weak = domain.weak;
+  return (
+    <div style={{ marginBottom: 20 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 7 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontSize: 15 }}>{domain.icon}</span>
+          <span style={{ fontSize: 14, fontWeight: 600, color: "#1A1A1A" }}>{domain.name}</span>
+          {weak && (
+            <span style={{
+              fontSize: 10.5, background: "rgba(224,49,49,0.08)", color: "#E03131",
+              borderRadius: 8, padding: "2px 8px", fontWeight: 600,
+            }}>개선 필요</span>
+          )}
+        </div>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+          <span style={{ fontSize: 12, color: "#ADB5BD" }}>평균 {domain.avg}</span>
+          <span style={{ fontSize: 18, fontWeight: 700, color: weak ? "#E03131" : accent }}>{domain.score}</span>
+        </div>
+      </div>
+      <div style={{ position: "relative", height: 8, background: "rgba(0,0,0,0.04)", borderRadius: 100 }}>
+        <div style={{
+          position: "absolute", top: 0, left: 0, height: "100%",
+          width: `${w}%`, borderRadius: 100,
+          background: weak ? "linear-gradient(90deg, #FFA8A8, #E03131)" : accent,
+          transition: "width 0.8s cubic-bezier(0.22, 1, 0.36, 1)",
+          boxShadow: weak ? "0 0 8px rgba(224,49,49,0.2)" : `0 0 8px ${accent}25`,
+        }} />
+        <div style={{
+          position: "absolute", top: -2, left: `${domain.avg}%`,
+          width: 2, height: 12, background: "#CED4DA", borderRadius: 1,
+          transform: "translateX(-50%)",
+        }} />
+      </div>
+    </div>
+  );
+}
+
+function GlassCard({ children, style = {} }) {
+  return <div style={{ ...glass, padding: "20px 18px", marginBottom: 14, ...style }}>{children}</div>;
+}
+
+function Label({ children }) {
+  return (
+    <div style={{ fontSize: 15, fontWeight: 700, color: "#1A1A1A", marginBottom: 14 }}>
+      {children}
+    </div>
+  );
+}
+
+/* ── Main ── */
+function ResultPage() {
+  // Get type from URL query parameter
+  const urlParams = new URLSearchParams(window.location.search);
+  const typeParam = parseInt(urlParams.get('type') || '1', 10);
+  const initialType = (typeParam >= 1 && typeParam <= 4) ? typeParam - 1 : 0;
+
+  const [sel, setSel] = useState(initialType);
+  const [view, setView] = useState("result");
+  const [copied, setCopied] = useState(false);
+  const t = types[sel];
+  const journeyPos = [8, 33, 60, 88];
+
+  // Update OG meta tags dynamically (for client-side, won't affect crawlers)
+  useEffect(() => {
+    document.getElementById('og-title').content = t.ogTitle;
+    document.getElementById('og-desc').content = t.ogDesc;
+    document.getElementById('og-image').content = `${BASE_URL}/og/type${t.id}.png`;
+    document.getElementById('og-url').content = `${BASE_URL}/result?type=${t.id}`;
+    document.getElementById('tw-title').content = t.ogTitle;
+    document.getElementById('tw-desc').content = t.ogDesc;
+    document.getElementById('tw-image').content = `${BASE_URL}/og/type${t.id}.png`;
+    document.title = `${t.typeName} | AI 준비도 테스트 결과`;
+  }, [t]);
+
+  const handleShare = async () => {
+    const shareUrl = `${BASE_URL}/result?type=${t.id}`;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2200);
+    } catch (err) {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = shareUrl;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2200);
+    }
+  };
+
+  return (
+    <div style={{
+      fontFamily: "'Pretendard Variable', 'Pretendard', -apple-system, 'Apple SD Gothic Neo', sans-serif",
+      maxWidth: 440, margin: "0 auto",
+      background: "linear-gradient(180deg, #F0F2F5 0%, #E8EAEF 100%)",
+      minHeight: "100vh",
+    }}>
+
+      {/* ─── HEADER ─── */}
+      <div style={{
+        padding: "16px 20px 12px",
+        display: "flex", justifyContent: "space-between", alignItems: "center",
+      }}>
+        <span style={{ fontSize: 11, letterSpacing: "0.08em", color: "#868E96", fontWeight: 600 }}>
+          보험연수원 AI전략팀
+        </span>
+        <span style={{
+          fontSize: 10, color: "#ADB5BD", padding: "3px 10px",
+          background: "rgba(255,255,255,0.5)", borderRadius: 8,
+        }}>OG v7</span>
+      </div>
+
+      {/* ─── TYPE TABS ─── */}
+      <div style={{
+        display: "flex", gap: 6, padding: "4px 16px 14px",
+        overflowX: "auto",
+      }}>
+        {types.map((type, i) => (
+          <button key={type.id} onClick={() => setSel(i)} style={{
+            flex: "0 0 auto", padding: "8px 16px", borderRadius: 12,
+            border: "none",
+            background: sel === i ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.35)",
+            backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
+            cursor: "pointer", fontSize: 13, fontWeight: sel === i ? 700 : 500,
+            color: sel === i ? type.accent : "#868E96",
+            whiteSpace: "nowrap", transition: "all 0.2s",
+            boxShadow: sel === i ? `0 2px 12px ${type.accent}18` : "none",
+          }}>
+            {type.emoji} {type.typeName}
+          </button>
+        ))}
+      </div>
+
+      {/* ─── VIEW TOGGLE ─── */}
+      <div style={{
+        display: "flex", gap: 3, margin: "0 16px 14px",
+        background: "rgba(255,255,255,0.4)", borderRadius: 14, padding: 4,
+        backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
+      }}>
+        {[
+          { key: "result", label: "결과 페이지" },
+          { key: "kakao", label: "카톡 미리보기" },
+          { key: "code", label: "OG 코드" },
+        ].map(v => (
+          <button key={v.key} onClick={() => setView(v.key)} style={{
+            flex: 1, padding: "9px 0", borderRadius: 11, border: "none",
+            background: view === v.key ? "rgba(255,255,255,0.9)" : "transparent",
+            fontWeight: view === v.key ? 700 : 500, fontSize: 13,
+            cursor: "pointer", color: view === v.key ? "#1A1A1A" : "#868E96",
+            boxShadow: view === v.key ? "0 1px 4px rgba(0,0,0,0.06)" : "none",
+            transition: "all 0.2s",
+          }}>
+            {v.label}
+          </button>
+        ))}
+      </div>
+
+      {/* ═══ RESULT VIEW ═══ */}
+      {view === "result" && (
+        <div style={{ padding: "0 12px 36px" }}>
+
+          {/* ─── HERO ─── */}
+          <GlassCard style={{
+            background: t.heroBg,
+            textAlign: "center", padding: 0,
+            overflow: "hidden", position: "relative",
+            border: "1px solid rgba(255,255,255,0.5)",
+          }}>
+            <svg style={{ position: "absolute", top: 14, left: -8, opacity: 0.15 }} width="88" height="42" viewBox="0 0 88 42" fill={t.accent}>
+              <ellipse cx="44" cy="29" rx="41" ry="12"/><ellipse cx="28" cy="21" rx="19" ry="14"/><ellipse cx="55" cy="19" rx="23" ry="16"/>
+            </svg>
+            <svg style={{ position: "absolute", top: 32, right: -6, opacity: 0.10, transform: "scaleX(-1)" }} width="68" height="34" viewBox="0 0 68 34" fill={t.accent}>
+              <ellipse cx="34" cy="23" rx="32" ry="10"/><ellipse cx="21" cy="16" rx="15" ry="11"/><ellipse cx="44" cy="15" rx="18" ry="13"/>
+            </svg>
+            <svg style={{ position: "absolute", bottom: 14, left: "40%", opacity: 0.07 }} width="56" height="28" viewBox="0 0 56 28" fill={t.accent}>
+              <ellipse cx="28" cy="19" rx="26" ry="8"/><ellipse cx="19" cy="13" rx="13" ry="9"/><ellipse cx="36" cy="12" rx="15" ry="11"/>
+            </svg>
+
+            <div style={{ position: "relative", zIndex: 1, padding: "34px 24px 30px" }}>
+              <div style={{ fontSize: 52, marginBottom: 10 }}>{t.emoji}</div>
+              <div style={{
+                display: "inline-block", fontSize: 11, fontWeight: 600,
+                color: t.accent, background: "rgba(255,255,255,0.65)",
+                backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
+                padding: "5px 14px", borderRadius: 20, marginBottom: 12,
+              }}>
+                {t.tier} · {t.score}
+              </div>
+              <div style={{ fontSize: 26, fontWeight: 800, color: "#1A1A1A", lineHeight: 1.25, marginBottom: 6 }}>
+                {t.typeName}
+              </div>
+              <div style={{ fontSize: 14, color: "#555", lineHeight: 1.55 }}>
+                {t.tagline}
+              </div>
+            </div>
+          </GlassCard>
+
+          {/* ─── JOURNEY MAP ─── */}
+          <GlassCard>
+            <Label>✈️ AI 도입 여정에서 우리 회사의 위치</Label>
+            <div style={{ position: "relative", height: 72, margin: "0 6px" }}>
+              <div style={{ position: "absolute", top: 22, left: 14, right: 14, height: 3, background: "rgba(0,0,0,0.06)", borderRadius: 2 }} />
+              <div style={{
+                position: "absolute", top: 22, left: 14,
+                width: `calc(${journeyPos[sel]}% - 14px)`,
+                height: 3, background: t.accent, borderRadius: 2,
+                transition: "width 0.6s cubic-bezier(0.4, 0, 0.2, 1)",
+              }} />
+              {types.map((type, i) => {
+                const active = i === sel;
+                const passed = journeyPos[i] <= journeyPos[sel];
+                return (
+                  <div key={type.id} style={{
+                    position: "absolute", left: `${journeyPos[i]}%`, top: 0,
+                    transform: "translateX(-50%)",
+                    display: "flex", flexDirection: "column", alignItems: "center",
+                    cursor: "pointer",
+                  }} onClick={() => setSel(i)}>
+                    <div style={{
+                      width: active ? 44 : 30, height: active ? 44 : 30,
+                      borderRadius: "50%",
+                      background: active ? t.accent : passed ? `${t.accent}28` : "rgba(255,255,255,0.8)",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: active ? 20 : 13,
+                      border: active ? "none" : "2px solid rgba(255,255,255,0.9)",
+                      boxShadow: active ? `0 4px 16px ${t.accent}30` : "0 1px 4px rgba(0,0,0,0.06)",
+                      transition: "all 0.3s",
+                    }}>
+                      {type.emoji}
+                    </div>
+                    <div style={{
+                      fontSize: 10, marginTop: 5, textAlign: "center",
+                      color: active ? t.accent : "#ADB5BD",
+                      fontWeight: active ? 700 : 400, maxWidth: 62, lineHeight: 1.2,
+                    }}>{type.typeName}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </GlassCard>
+
+          {/* ─── 5 DOMAIN DIAGNOSIS ─── */}
+          <GlassCard>
+            <Label>📊 영역별 진단 결과</Label>
+            <div style={{ fontSize: 12, color: "#999", marginTop: -10, marginBottom: 18 }}>12문항 · 5개 영역 분석</div>
+            {t.domains.map(d => <DomainBar key={d.name} domain={d} accent={t.accent} />)}
+          </GlassCard>
+
+          {/* ─── INDUSTRY STATS ─── */}
+          <GlassCard>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+              <Label>🏢 업계 현황</Label>
+              <span style={{ fontSize: 11, color: "#CED4DA" }}>2025 · 보험연구원</span>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              {industryStats.map((s, i) => (
+                <div key={i} style={{
+                  background: "rgba(255,255,255,0.55)",
+                  backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
+                  borderRadius: 14, padding: "13px 14px",
+                  border: "1px solid rgba(255,255,255,0.6)",
+                }}>
+                  <div style={{ fontSize: 12, color: "#999", marginBottom: 4 }}>{s.label}</div>
+                  <div style={{ fontSize: 17, fontWeight: 700, color: "#1A1A1A" }}>{s.value}</div>
+                </div>
+              ))}
+            </div>
+          </GlassCard>
+
+          {/* ─── ANALYSIS REPORT ─── */}
+          <GlassCard>
+            <Label>📋 분석 리포트</Label>
+            <div style={{ marginBottom: 16 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#495057", marginBottom: 6 }}>🎯 벤치마크 포지션</div>
+              <div style={{
+                fontSize: 13.5, color: "#495057", lineHeight: 1.75,
+                padding: "13px 16px", background: "rgba(0,0,0,0.025)", borderRadius: 14,
+              }}>{t.benchmarkPosition}</div>
+            </div>
+            <div style={{ marginBottom: 16 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#495057", marginBottom: 6 }}>💡 핵심 인사이트</div>
+              <div style={{
+                fontSize: 13.5, color: "#495057", lineHeight: 1.75,
+                padding: "13px 16px", background: "rgba(255,212,59,0.10)", borderRadius: 14,
+              }}>{t.insight}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#495057", marginBottom: 6 }}>⚖️ 규제 대응 포인트</div>
+              <div style={{
+                fontSize: 13.5, color: "#495057", lineHeight: 1.75,
+                padding: "13px 16px", background: "rgba(255,146,43,0.08)", borderRadius: 14,
+              }}>{t.regulatoryPoint}</div>
+            </div>
+          </GlassCard>
+
+          {/* ─── WEAK AREA ─── */}
+          {t.weakArea && (
+            <GlassCard style={{
+              background: "rgba(255,245,245,0.80)",
+              border: "1px solid rgba(255,200,200,0.5)",
+            }}>
+              <Label>🚨 가장 취약한 영역: {t.weakArea}</Label>
+              <div style={{ fontSize: 13.5, color: "#495057", lineHeight: 1.8 }}>
+                {t.weakArea === "AI 거버넌스" && (
+                  <>
+                    금융위 7대 원칙이 요구하는 설명가능성(XAI), 공정성, 책임성 체계를 갖추지 못하면 AI 도입 자체가 리스크가 됩니다.
+                    <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid rgba(255,200,200,0.4)" }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: "#C92A2A", marginBottom: 8 }}>즉시 필요한 조치</div>
+                      <div style={{ fontSize: 13, color: "#666", lineHeight: 2 }}>
+                        ① AI 윤리 가이드라인 수립 (금융위 7대 원칙 기반)<br/>② 개인정보영향평가(PIA) 프로세스 구축<br/>③ AI 모델 감사·모니터링 체계 설계
+                      </div>
+                    </div>
+                  </>
+                )}
+                {t.weakArea === "기술 인프라" && (
+                  <>
+                    레거시 시스템 위에서는 AI가 돌아갈 수 없습니다. 망분리 환경에서의 AI 활용, 데이터 파이프라인 구축이 선행되어야 합니다.
+                    <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid rgba(255,200,200,0.4)" }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: "#C92A2A", marginBottom: 8 }}>즉시 필요한 조치</div>
+                      <div style={{ fontSize: 13, color: "#666", lineHeight: 2 }}>
+                        ① 클라우드 전환 로드맵 수립<br/>② 데이터 품질 진단 및 정제 체계 구축<br/>③ 보안 기준 충족 AI 개발 환경 설계
+                      </div>
+                    </div>
+                  </>
+                )}
+                {t.weakArea === "규제 대응력" && (
+                  <>
+                    AI 기본법이 2026.1.22부터 시행 중입니다. '몰랐다'는 더 이상 면책 사유가 아닙니다.
+                    <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid rgba(255,200,200,0.4)" }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: "#C92A2A", marginBottom: 8 }}>즉시 필요한 조치</div>
+                      <div style={{ fontSize: 13, color: "#666", lineHeight: 2 }}>
+                        ① AI 기본법 + 금융위 7대 원칙 내부 교육 실시<br/>② 사내 AI 활용 현황 전수 조사<br/>③ 규제 대응 TF 구성 및 로드맵 수립
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </GlassCard>
+          )}
+
+          {/* ─── COURSES ─── */}
+          <GlassCard>
+            <Label>📚 추천 교육과정</Label>
+            <div style={{ fontSize: 12, color: "#999", marginTop: -10, marginBottom: 16 }}>취약 영역 기준 추천 · 보험연수원 정규과정</div>
+
+            {t.courses.map((c, i) => (
+              <div key={i} style={{
+                padding: "14px 16px",
+                background: "rgba(255,255,255,0.55)",
+                backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
+                borderRadius: 14, marginBottom: 8,
+                border: "1px solid rgba(255,255,255,0.5)",
+              }}>
+                <div style={{ display: "flex", gap: 6, marginBottom: 7, flexWrap: "wrap", alignItems: "center" }}>
+                  <span style={{
+                    fontSize: 11, fontWeight: 600,
+                    background: c.level === "초급" ? "rgba(47,158,68,0.10)" : c.level === "중급" ? "rgba(25,113,194,0.10)" : "rgba(232,89,12,0.10)",
+                    color: c.level === "초급" ? "#2B8A3E" : c.level === "중급" ? "#1864AB" : "#E8590C",
+                    borderRadius: 8, padding: "3px 10px",
+                  }}>{c.level}</span>
+                  <span style={{
+                    fontSize: 11, fontWeight: 600,
+                    background: t.accentSoft, color: t.accent,
+                    borderRadius: 8, padding: "3px 10px",
+                  }}>{c.match}</span>
+                  <span style={{ fontSize: 11, color: "#CED4DA", marginLeft: "auto" }}>{c.code}</span>
+                </div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: "#1A1A1A", lineHeight: 1.45 }}>
+                  {c.name}
+                </div>
+              </div>
+            ))}
+
+            <a href={KIIIS_URL} target="_blank" rel="noopener noreferrer" style={{
+              display: "block", marginTop: 14, textAlign: "center",
+              padding: "15px 0", background: t.accent,
+              borderRadius: 14, color: "#FFF",
+              fontSize: 14, fontWeight: 700, textDecoration: "none",
+              boxShadow: `0 4px 20px ${t.accent}28`,
+            }}>
+              {t.cta}
+            </a>
+            <div style={{ fontSize: 11, color: "#ADB5BD", textAlign: "center", marginTop: 8 }}>
+              보험연수원 (in.or.kr)
+            </div>
+          </GlassCard>
+
+          {/* ─── SHARE ─── */}
+          <div style={{ padding: "2px 4px 0" }}>
+            <button onClick={handleShare} style={{
+              width: "100%", padding: "16px 0", borderRadius: 16,
+              border: "none", cursor: "pointer",
+              background: "#FEE500", color: "#1A1A1A",
+              fontSize: 15, fontWeight: 700,
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+              boxShadow: "0 4px 20px rgba(254,229,0,0.3)",
+            }}>
+              {copied ? "✅ 링크가 복사되었습니다" : (
+                <>
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    <path d="M9 1C4.53 1 1 3.72 1 7.1c0 2.15 1.4 4.05 3.54 5.17l-.65 2.38c-.1.4.14.39.31.28l2.86-1.93c.62.09 1.26.14 1.94.14C13.47 13.14 17 10.42 17 7.04 17 3.72 13.47 1 9 1z" fill="#1A1A1A"/>
+                  </svg>
+                  카카오톡으로 결과 공유하기
+                </>
+              )}
+            </button>
+            <div style={{ fontSize: 11, color: "#ADB5BD", textAlign: "center", marginTop: 8, lineHeight: 1.5 }}>
+              동료에게 공유하고 우리 회사 위치를 비교해보세요
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ═══ KAKAO PREVIEW ═══ */}
+      {view === "kakao" && (
+        <div style={{ padding: "0 12px 36px" }}>
+          <div style={{ background: "#B2C7D9", borderRadius: 20, padding: 16, marginBottom: 14 }}>
+            <div style={{ fontSize: 10, color: "#5B7A8C", textAlign: "center", marginBottom: 12 }}>
+              2026년 2월 11일 화요일
+            </div>
+            <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 10 }}>
+              <div style={{
+                background: "#FEE500", borderRadius: "16px 4px 16px 16px",
+                padding: "10px 14px", fontSize: 13, lineHeight: 1.5,
+                color: "#1A1A1A", maxWidth: "78%",
+              }}>
+                {t.shareText}
+              </div>
+            </div>
+            <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}>
+              <div style={{
+                width: 260, borderRadius: 12, overflow: "hidden",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.10)", background: "#FFF",
+              }}>
+                <div style={{
+                  background: t.heroBg, padding: "20px 14px",
+                  textAlign: "center", position: "relative",
+                }}>
+                  <div style={{ fontSize: 32, marginBottom: 4 }}>{t.emoji}</div>
+                  <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1A1A", marginBottom: 2, lineHeight: 1.3 }}>
+                    {t.typeName}
+                  </div>
+                  <div style={{ fontSize: 10, color: "#888" }}>{t.tagline}</div>
+                </div>
+                <div style={{ padding: "10px 12px" }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "#1A1A1A", marginBottom: 3, lineHeight: 1.4 }}>
+                    {t.ogTitle}
+                  </div>
+                  <div style={{ fontSize: 10.5, color: "#888", lineHeight: 1.5 }}>{t.ogDesc}</div>
+                  <div style={{ fontSize: 9, color: "#CCC", marginTop: 5 }}>kiiisworking.vercel.app</div>
+                </div>
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: 6, alignItems: "flex-start" }}>
+              <div style={{
+                width: 28, height: 28, borderRadius: 10,
+                background: "#DDD", display: "flex", alignItems: "center",
+                justifyContent: "center", fontSize: 12, flexShrink: 0,
+              }}>🙂</div>
+              <div>
+                <div style={{ fontSize: 9, color: "#5B7A8C", marginBottom: 2 }}>동료</div>
+                <div style={{
+                  background: "#FFF", borderRadius: "4px 16px 16px 16px",
+                  padding: "10px 14px", fontSize: 13, lineHeight: 1.5,
+                }}>
+                  ㅋㅋ 나도 해봐야겠다 우리 회사는 어디쯤이려나
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <GlassCard>
+            <Label>🧠 공유 설계</Label>
+            <div style={{ fontSize: 13, color: "#555", lineHeight: 1.85 }}>
+              <strong style={{ color: "#1A1A1A" }}>주어 = "우리 회사"</strong> → 직장 단톡방 자연 확산<br/>
+              <strong style={{ color: "#1A1A1A" }}>비행 메타포</strong> → "어디쯤이야?" 비교 심리<br/>
+              <strong style={{ color: "#1A1A1A" }}>ㅋㅋ 자조</strong> → 공유 허들 낮춤<br/>
+              <strong style={{ color: "#1A1A1A" }}>"너네는? →"</strong> → 동종사 클릭 유발
+            </div>
+          </GlassCard>
+        </div>
+      )}
+
+      {/* ═══ CODE ═══ */}
+      {view === "code" && (
+        <div style={{ padding: "0 12px 36px" }}>
+          <GlassCard>
+            <Label>{t.emoji} {t.typeName} — OG 메타 태그</Label>
+            <pre style={{
+              background: "#1A1A2E", borderRadius: 14, padding: 14,
+              color: "#CED4DA", fontSize: 11, lineHeight: 1.7,
+              overflowX: "auto", margin: 0,
+            }}>
+{`<meta property="og:title" 
+  content="${t.ogTitle}" />
+<meta property="og:description" 
+  content="${t.ogDesc}" />
+<meta property="og:image" 
+  content="${BASE_URL}/og/type${t.id}.png" />
+<meta property="og:url" 
+  content="${BASE_URL}/result?type=${t.id}" />`}
+            </pre>
+          </GlassCard>
+
+          <GlassCard>
+            <Label>📱 카카오 SDK 공유</Label>
+            <pre style={{
+              background: "#1A1A2E", borderRadius: 14, padding: 14,
+              color: "#CED4DA", fontSize: 11, lineHeight: 1.7,
+              overflowX: "auto", margin: 0,
+            }}>
+{`Kakao.Share.sendDefault({
+  objectType: 'feed',
+  content: {
+    title: '${t.ogTitle}',
+    description: '${t.ogDesc}',
+    imageUrl: '${BASE_URL}/og/type${t.id}.png',
+    link: {
+      mobileWebUrl: '${BASE_URL}/result?type=${t.id}',
+      webUrl: '${BASE_URL}/result?type=${t.id}',
+    },
+  },
+  buttons: [{
+    title: '우리 회사도 진단하기',
+    link: { 
+      mobileWebUrl: '${BASE_URL}', 
+      webUrl: '${BASE_URL}' 
+    },
+  }],
+});`}
+            </pre>
+          </GlassCard>
+        </div>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<ResultPage />);
+</script>
+</body>
+</html>
