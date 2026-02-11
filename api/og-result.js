@@ -28,8 +28,8 @@ export default async function handler(request) {
   const data = typeData[type];
   const baseUrl = 'https://kiiisworking.vercel.app';
 
-  // Fetch the original result.html
-  const resultHtml = await fetch(`${baseUrl}/result.html`).then(r => r.text());
+  // Fetch the original result.html (bypass cache)
+  const resultHtml = await fetch(`${baseUrl}/result.html`, { cache: 'no-store' }).then(r => r.text());
 
   // Replace OG meta tags
   const modifiedHtml = resultHtml
@@ -53,7 +53,7 @@ export default async function handler(request) {
   return new Response(modifiedHtml, {
     headers: {
       'Content-Type': 'text/html; charset=utf-8',
-      'Cache-Control': 'public, max-age=3600',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
     },
   });
 }
