@@ -22,8 +22,9 @@
   <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
     *{font-family:'Pretendard Variable','Pretendard',-apple-system,'Apple SD Gothic Neo',sans-serif;-webkit-tap-highlight-color:transparent;box-sizing:border-box}
-    html,body{min-height:100vh;margin:0;padding:0}
-    #root{min-height:100vh}
+    html,body{min-height:100vh;margin:0;padding:0;background:linear-gradient(180deg,#F0F2F5 0%,#E8EAEF 100%)}
+    #root{min-height:100vh;opacity:0;animation:pageIn 0.4s ease-out forwards}
+    @keyframes pageIn{from{opacity:0}to{opacity:1}}
 
     /* Focus States for Accessibility */
     button:focus-visible,a:focus-visible{outline:2px solid #E8590C;outline-offset:2px;border-radius:8px}
@@ -246,10 +247,8 @@ function ResultPage() {
   const typeParam = parseInt(urlParams.get('type') || '1', 10);
   const initialType = (typeParam >= 1 && typeParam <= 4) ? typeParam - 1 : 0;
 
-  const [sel, setSel] = useState(initialType);
-  const [view, setView] = useState("result");
   const [copied, setCopied] = useState(false);
-  const t = types[sel];
+  const t = types[initialType];
   const journeyPos = [8, 33, 60, 88];
 
   // Update OG meta tags dynamically (for client-side, won't affect crawlers)
@@ -294,65 +293,15 @@ function ResultPage() {
       {/* ─── HEADER ─── */}
       <div style={{
         padding: "16px 20px 12px",
-        display: "flex", justifyContent: "space-between", alignItems: "center",
+        display: "flex", justifyContent: "center", alignItems: "center",
       }}>
         <span style={{ fontSize: 11, letterSpacing: "0.08em", color: "#868E96", fontWeight: 600 }}>
           보험연수원 AI전략팀
         </span>
-        <span style={{
-          fontSize: 10, color: "#ADB5BD", padding: "3px 10px",
-          background: "rgba(255,255,255,0.5)", borderRadius: 8,
-        }}>OG v7</span>
-      </div>
-
-      {/* ─── TYPE TABS ─── */}
-      <div style={{
-        display: "flex", gap: 6, padding: "4px 16px 14px",
-        overflowX: "auto",
-      }}>
-        {types.map((type, i) => (
-          <button key={type.id} onClick={() => setSel(i)} style={{
-            flex: "0 0 auto", padding: "8px 16px", borderRadius: 12,
-            border: "none",
-            background: sel === i ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.35)",
-            backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
-            cursor: "pointer", fontSize: 13, fontWeight: sel === i ? 700 : 500,
-            color: sel === i ? type.accent : "#868E96",
-            whiteSpace: "nowrap", transition: "all 0.2s",
-            boxShadow: sel === i ? `0 2px 12px ${type.accent}18` : "none",
-          }}>
-            {type.emoji} {type.typeName}
-          </button>
-        ))}
-      </div>
-
-      {/* ─── VIEW TOGGLE ─── */}
-      <div style={{
-        display: "flex", gap: 3, margin: "0 16px 14px",
-        background: "rgba(255,255,255,0.4)", borderRadius: 14, padding: 4,
-        backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
-      }}>
-        {[
-          { key: "result", label: "결과 페이지" },
-          { key: "kakao", label: "카톡 미리보기" },
-          { key: "code", label: "OG 코드" },
-        ].map(v => (
-          <button key={v.key} onClick={() => setView(v.key)} style={{
-            flex: 1, padding: "9px 0", borderRadius: 11, border: "none",
-            background: view === v.key ? "rgba(255,255,255,0.9)" : "transparent",
-            fontWeight: view === v.key ? 700 : 500, fontSize: 13,
-            cursor: "pointer", color: view === v.key ? "#1A1A1A" : "#868E96",
-            boxShadow: view === v.key ? "0 1px 4px rgba(0,0,0,0.06)" : "none",
-            transition: "all 0.2s",
-          }}>
-            {v.label}
-          </button>
-        ))}
       </div>
 
       {/* ═══ RESULT VIEW ═══ */}
-      {view === "result" && (
-        <div style={{ padding: "0 12px 36px" }}>
+      <div style={{ padding: "0 12px 36px" }}
 
           {/* ─── HERO ─── */}
           <GlassCard style={{
@@ -397,20 +346,19 @@ function ResultPage() {
               <div style={{ position: "absolute", top: 22, left: 14, right: 14, height: 3, background: "rgba(0,0,0,0.06)", borderRadius: 2 }} />
               <div style={{
                 position: "absolute", top: 22, left: 14,
-                width: `calc(${journeyPos[sel]}% - 14px)`,
+                width: `calc(${journeyPos[initialType]}% - 14px)`,
                 height: 3, background: t.accent, borderRadius: 2,
                 transition: "width 0.6s cubic-bezier(0.4, 0, 0.2, 1)",
               }} />
               {types.map((type, i) => {
-                const active = i === sel;
-                const passed = journeyPos[i] <= journeyPos[sel];
+                const active = i === initialType;
+                const passed = journeyPos[i] <= journeyPos[initialType];
                 return (
                   <div key={type.id} style={{
                     position: "absolute", left: `${journeyPos[i]}%`, top: 0,
                     transform: "translateX(-50%)",
                     display: "flex", flexDirection: "column", alignItems: "center",
-                    cursor: "pointer",
-                  }} onClick={() => setSel(i)}>
+                  }}>
                     <div style={{
                       width: active ? 44 : 30, height: active ? 44 : 30,
                       borderRadius: "50%",
@@ -616,129 +564,6 @@ function ResultPage() {
             </a>
           </div>
         </div>
-      )}
-
-      {/* ═══ KAKAO PREVIEW ═══ */}
-      {view === "kakao" && (
-        <div style={{ padding: "0 12px 36px" }}>
-          <div style={{ background: "#B2C7D9", borderRadius: 20, padding: 16, marginBottom: 14 }}>
-            <div style={{ fontSize: 10, color: "#5B7A8C", textAlign: "center", marginBottom: 12 }}>
-              2026년 2월 11일 화요일
-            </div>
-            <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 10 }}>
-              <div style={{
-                background: "#FEE500", borderRadius: "16px 4px 16px 16px",
-                padding: "10px 14px", fontSize: 13, lineHeight: 1.5,
-                color: "#1A1A1A", maxWidth: "78%",
-              }}>
-                {t.shareText}
-              </div>
-            </div>
-            <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}>
-              <div style={{
-                width: 260, borderRadius: 12, overflow: "hidden",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.10)", background: "#FFF",
-              }}>
-                <div style={{
-                  background: t.heroBg, padding: "20px 14px",
-                  textAlign: "center", position: "relative",
-                }}>
-                  <div style={{ fontSize: 32, marginBottom: 4 }}>{t.emoji}</div>
-                  <div style={{ fontSize: 15, fontWeight: 800, color: "#1A1A1A", marginBottom: 2, lineHeight: 1.3 }}>
-                    {t.typeName}
-                  </div>
-                  <div style={{ fontSize: 10, color: "#888" }}>{t.tagline}</div>
-                </div>
-                <div style={{ padding: "10px 12px" }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: "#1A1A1A", marginBottom: 3, lineHeight: 1.4 }}>
-                    {t.ogTitle}
-                  </div>
-                  <div style={{ fontSize: 10.5, color: "#888", lineHeight: 1.5 }}>{t.ogDesc}</div>
-                  <div style={{ fontSize: 9, color: "#CCC", marginTop: 5 }}>kiiisworking.vercel.app</div>
-                </div>
-              </div>
-            </div>
-            <div style={{ display: "flex", gap: 6, alignItems: "flex-start" }}>
-              <div style={{
-                width: 28, height: 28, borderRadius: 10,
-                background: "#DDD", display: "flex", alignItems: "center",
-                justifyContent: "center", fontSize: 12, flexShrink: 0,
-              }}>🙂</div>
-              <div>
-                <div style={{ fontSize: 9, color: "#5B7A8C", marginBottom: 2 }}>동료</div>
-                <div style={{
-                  background: "#FFF", borderRadius: "4px 16px 16px 16px",
-                  padding: "10px 14px", fontSize: 13, lineHeight: 1.5,
-                }}>
-                  ㅋㅋ 나도 해봐야겠다 우리 회사는 어디쯤이려나
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <GlassCard>
-            <Label>🧠 공유 설계</Label>
-            <div style={{ fontSize: 13, color: "#555", lineHeight: 1.85 }}>
-              <strong style={{ color: "#1A1A1A" }}>주어 = "우리 회사"</strong> → 직장 단톡방 자연 확산<br/>
-              <strong style={{ color: "#1A1A1A" }}>비행 메타포</strong> → "어디쯤이야?" 비교 심리<br/>
-              <strong style={{ color: "#1A1A1A" }}>ㅋㅋ 자조</strong> → 공유 허들 낮춤<br/>
-              <strong style={{ color: "#1A1A1A" }}>"너네는? →"</strong> → 동종사 클릭 유발
-            </div>
-          </GlassCard>
-        </div>
-      )}
-
-      {/* ═══ CODE ═══ */}
-      {view === "code" && (
-        <div style={{ padding: "0 12px 36px" }}>
-          <GlassCard>
-            <Label>{t.emoji} {t.typeName} — OG 메타 태그</Label>
-            <pre style={{
-              background: "#1A1A2E", borderRadius: 14, padding: 14,
-              color: "#CED4DA", fontSize: 11, lineHeight: 1.7,
-              overflowX: "auto", margin: 0,
-            }}>
-{`<meta property="og:title" 
-  content="${t.ogTitle}" />
-<meta property="og:description" 
-  content="${t.ogDesc}" />
-<meta property="og:image" 
-  content="${BASE_URL}/og/type${t.id}.png" />
-<meta property="og:url" 
-  content="${BASE_URL}/result?type=${t.id}" />`}
-            </pre>
-          </GlassCard>
-
-          <GlassCard>
-            <Label>📱 카카오 SDK 공유</Label>
-            <pre style={{
-              background: "#1A1A2E", borderRadius: 14, padding: 14,
-              color: "#CED4DA", fontSize: 11, lineHeight: 1.7,
-              overflowX: "auto", margin: 0,
-            }}>
-{`Kakao.Share.sendDefault({
-  objectType: 'feed',
-  content: {
-    title: '${t.ogTitle}',
-    description: '${t.ogDesc}',
-    imageUrl: '${BASE_URL}/og/type${t.id}.png',
-    link: {
-      mobileWebUrl: '${BASE_URL}/result?type=${t.id}',
-      webUrl: '${BASE_URL}/result?type=${t.id}',
-    },
-  },
-  buttons: [{
-    title: '우리 회사도 진단하기',
-    link: { 
-      mobileWebUrl: '${BASE_URL}', 
-      webUrl: '${BASE_URL}' 
-    },
-  }],
-});`}
-            </pre>
-          </GlassCard>
-        </div>
-      )}
     </div>
   );
 }
