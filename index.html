@@ -17,10 +17,38 @@
     *{font-family:'Pretendard Variable','Pretendard',-apple-system,'Apple SD Gothic Neo',sans-serif;-webkit-tap-highlight-color:transparent;box-sizing:border-box}
     html,body{min-height:100vh;margin:0;padding:0}
     #app{min-height:100vh}
+
+    /* Glass Card Styles */
     .glass-card{background:rgba(255,255,255,0.72);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-radius:20px;border:1px solid rgba(255,255,255,0.6);box-shadow:0 2px 16px rgba(0,0,0,0.04),0 0.5px 0 rgba(255,255,255,0.8) inset}
-    .glass-card-dark{background:rgba(255,255,255,0.45);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:16px;border:1px solid rgba(255,255,255,0.5)}
-    .btn-primary{background:linear-gradient(135deg,#E8590C 0%,#D9480F 100%);color:#fff;font-weight:700;border:none;border-radius:14px;box-shadow:0 4px 20px rgba(232,89,12,0.28);cursor:pointer;transition:transform 0.15s}
-    .btn-primary:active{transform:scale(0.98)}
+    .glass-card-dark{background:rgba(255,255,255,0.45);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:16px;border:1px solid rgba(255,255,255,0.5);transition:all 0.2s ease}
+    .glass-card-dark:hover{background:rgba(255,255,255,0.6);transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.06)}
+
+    /* Primary Button */
+    .btn-primary{background:linear-gradient(135deg,#E8590C 0%,#D9480F 100%);color:#fff;font-weight:700;border:none;border-radius:14px;box-shadow:0 4px 20px rgba(232,89,12,0.28);cursor:pointer;transition:all 0.2s ease}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(232,89,12,0.35)}
+    .btn-primary:active{transform:scale(0.98) translateY(0)}
+
+    /* Answer Option Button */
+    .answer-btn{width:100%;padding:14px 16px;border-radius:14px;text-align:left;background:rgba(255,255,255,0.55);border:1px solid rgba(255,255,255,0.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);cursor:pointer;transition:all 0.2s ease}
+    .answer-btn:hover{background:rgba(232,89,12,0.08);border-color:rgba(232,89,12,0.2);transform:translateX(4px)}
+    .answer-btn:active{transform:scale(0.98)}
+
+    /* Focus States for Accessibility */
+    .btn-primary:focus-visible,.answer-btn:focus-visible{outline:2px solid #E8590C;outline-offset:2px}
+
+    /* Reduced Motion Support */
+    @media(prefers-reduced-motion:reduce){
+      *{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important}
+    }
+
+    /* Progress Bar Animation */
+    .progress-fill{transition:width 0.5s cubic-bezier(0.4,0,0.2,1)}
+    @media(prefers-reduced-motion:reduce){.progress-fill{transition:none}}
+
+    /* Card Entrance Animation */
+    @keyframes fadeInUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .animate-in{animation:fadeInUp 0.4s ease-out}
+    @media(prefers-reduced-motion:reduce){.animate-in{animation:none}}
   </style>
 </head>
 <body>
@@ -84,7 +112,7 @@ function render(){
     app.innerHTML=`
     <div style="min-height:100vh;background:linear-gradient(180deg,#F0F2F5 0%,#E8EAEF 100%);display:flex;align-items:center;justify-content:center;padding:16px">
       <div style="max-width:400px;width:100%">
-        <div class="glass-card" style="overflow:hidden">
+        <div class="glass-card animate-in" style="overflow:hidden">
           <div style="background:linear-gradient(160deg,#FFF7F3 0%,#FFE8DC 50%,#FFDCC8 100%);padding:34px 24px 30px;text-align:center;position:relative">
             <div style="font-size:52px;margin-bottom:10px">🤖</div>
             <div style="display:inline-block;font-size:11px;font-weight:600;color:#E8590C;background:rgba(255,255,255,0.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:5px 14px;border-radius:20px;margin-bottom:12px">보험연수원</div>
@@ -106,7 +134,7 @@ function render(){
                 <div><div style="font-size:14px;font-weight:600;color:#1A1A1A">업계 벤치마크</div><div style="font-size:12px;color:#868E96;margin-top:2px">32개 보험사 대비 내 위치</div></div>
               </div>
             </div>
-            <button onclick="screen='quiz';render();" class="btn-primary" style="width:100%;padding:16px 0;font-size:15px">테스트 시작하기</button>
+            <button onclick="screen='quiz';render();" class="btn-primary" style="width:100%;padding:16px 0;font-size:15px" aria-label="AI 준비도 테스트 시작하기">테스트 시작하기</button>
             <p style="text-align:center;color:#ADB5BD;font-size:12px;margin:12px 0 0 0">12문항 · 약 3분 소요</p>
           </div>
         </div>
@@ -130,17 +158,17 @@ function render(){
             <span style="font-size:12px;color:#868E96;background:rgba(255,255,255,0.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:5px 14px;border-radius:20px">${C[q.c].icon} ${C[q.c].name}</span>
           </div>
         </div>
-        <div class="glass-card" style="padding:24px 20px;opacity:${transitioning?'0.5':'1'};transform:scale(${transitioning?'0.97':'1'});transition:all 0.3s">
+        <div class="glass-card animate-in" style="padding:24px 20px;opacity:${transitioning?'0.5':'1'};transform:scale(${transitioning?'0.97':'1'});transition:opacity 0.25s ease,transform 0.25s ease">
           <div style="text-align:center;margin-bottom:20px">
             <span style="font-size:40px;display:block;margin-bottom:12px">${q.e}</span>
             <h2 style="font-size:16px;font-weight:700;color:#1A1A1A;line-height:1.5;white-space:pre-line;margin:0">${q.q}</h2>
             <p style="font-size:11px;color:#ADB5BD;margin:10px 0 0 0">📎 ${q.s}</p>
           </div>
-          <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;flex-direction:column;gap:10px" role="group" aria-label="답변 선택">
             ${q.o.map((opt,i)=>`
-              <button onclick="selectAnswer(${i+1})" ${transitioning?'disabled':''} style="width:100%;padding:14px 16px;border-radius:14px;text-align:left;background:rgba(255,255,255,0.55);border:1px solid rgba(255,255,255,0.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);cursor:pointer;transition:all 0.15s" onmouseover="this.style.background='rgba(232,89,12,0.08)'" onmouseout="this.style.background='rgba(255,255,255,0.55)'">
+              <button onclick="selectAnswer(${i+1})" ${transitioning?'disabled':''} class="answer-btn" aria-label="답변 ${i+1}: ${opt}">
                 <div style="display:flex;align-items:center;gap:12px">
-                  <div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#E8590C,#D9480F);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;flex-shrink:0">${i+1}</div>
+                  <div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#E8590C,#D9480F);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;flex-shrink:0;transition:transform 0.2s" class="answer-number">${i+1}</div>
                   <span style="font-size:14px;line-height:1.45;color:#1A1A1A">${opt}</span>
                 </div>
               </button>
