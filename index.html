@@ -49,6 +49,11 @@
     @keyframes fadeInUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
     .animate-in{animation:fadeInUp 0.4s ease-out}
     @media(prefers-reduced-motion:reduce){.animate-in{animation:none}}
+
+    /* Question Card Transition */
+    .question-card{opacity:1;transform:translateY(0);transition:opacity 0.2s ease,transform 0.2s ease}
+    .question-card.fade-out{opacity:0;transform:translateY(-8px)}
+    .question-card.fade-in{opacity:1;transform:translateY(0)}
   </style>
 </head>
 <body>
@@ -154,7 +159,7 @@ function render(){
             <span style="font-size:12px;color:#868E96;background:rgba(255,255,255,0.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:5px 14px;border-radius:20px">${C[q.c].icon} ${C[q.c].name}</span>
           </div>
         </div>
-        <div class="glass-card animate-in" style="padding:24px 20px;opacity:${transitioning?'0.5':'1'};transform:scale(${transitioning?'0.97':'1'});transition:opacity 0.25s ease,transform 0.25s ease">
+        <div id="question-card" class="glass-card question-card" style="padding:24px 20px">
           <div style="text-align:center;margin-bottom:20px">
             <span style="font-size:40px;display:block;margin-bottom:12px">${q.e}</span>
             <h2 style="font-size:16px;font-weight:700;color:#1A1A1A;line-height:1.5;white-space:pre-line;margin:0">${q.q}</h2>
@@ -181,23 +186,35 @@ function selectAnswer(score){
   if(transitioning)return;
   transitioning=true;
   answers.push(score);
-  render();
+
+  // Fade-out animation
+  const card=document.getElementById('question-card');
+  if(card)card.classList.add('fade-out');
+
   setTimeout(()=>{
     if(currentQ<Q.length-1){
       currentQ++;
       transitioning=false;
       render();
+      // Fade-in animation after render
+      const newCard=document.getElementById('question-card');
+      if(newCard){
+        newCard.classList.add('fade-out');
+        requestAnimationFrame(()=>{
+          newCard.classList.remove('fade-out');
+        });
+      }
     } else {
       // 점수 계산 후 결과 페이지로 리다이렉트
       const total=answers.reduce((a,b)=>a+b,0);
-      let type;
-      if(total>=42) type=1;      // 42-48점: AI 선도 기업
-      else if(total>=32) type=2; // 32-41점: AI 도입 준비 완료
-      else if(total>=22) type=3; // 22-31점: AI 탐색 단계
-      else type=4;               // 12-21점: AI 여정 시작점
-      window.location.href='/result?type='+type;
+      let resultType;
+      if(total>=42) resultType='leader';       // 42-48점: AI 선도 기업
+      else if(total>=32) resultType='ready';   // 32-41점: AI 도입 준비 완료
+      else if(total>=22) resultType='exploring';// 22-31점: AI 탐색 단계
+      else resultType='starting';              // 12-21점: AI 여정 시작점
+      window.location.href='/result/'+resultType;
     }
-  },250);
+  },200);
 }
 
 function restart(){screen='home';currentQ=0;answers=[];render();}

@@ -1,8 +1,8 @@
 {
   "rewrites": [
     {
-      "source": "/result",
-      "destination": "/api/og-result"
+      "source": "/result/:type",
+      "destination": "/api/og-result?type=:type"
     }
   ]
 }

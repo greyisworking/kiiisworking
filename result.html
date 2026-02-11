@@ -8,13 +8,13 @@
   <!-- Default OG tags - will be overridden by Vercel Edge for dynamic sharing -->
   <meta property="og:title" content="우리 회사 AI 준비도 테스트 결과" id="og-title">
   <meta property="og:description" content="AI 기본법 시행 전, 우리 회사의 AI 도입 준비 수준을 확인하세요." id="og-desc">
-  <meta property="og:image" content="https://kiiisworking.vercel.app/og/type1.png" id="og-image">
-  <meta property="og:url" content="https://kiiisworking.vercel.app/result" id="og-url">
+  <meta property="og:image" content="https://kiiisworking.vercel.app/og/leader.png" id="og-image">
+  <meta property="og:url" content="https://kiiisworking.vercel.app/result/leader" id="og-url">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="우리 회사 AI 준비도 테스트 결과" id="tw-title">
   <meta name="twitter:description" content="AI 기본법 시행 전, 우리 회사의 AI 도입 준비 수준을 확인하세요." id="tw-desc">
-  <meta name="twitter:image" content="https://kiiisworking.vercel.app/og/type1.png" id="tw-image">
+  <meta name="twitter:image" content="https://kiiisworking.vercel.app/og/leader.png" id="tw-image">
   
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -241,30 +241,33 @@ function Label({ children }) {
 }
 
 /* ── Main ── */
+const typeKeys = ['leader', 'ready', 'exploring', 'starting'];
+
 function ResultPage() {
-  // Get type from URL query parameter
-  const urlParams = new URLSearchParams(window.location.search);
-  const typeParam = parseInt(urlParams.get('type') || '1', 10);
-  const initialType = (typeParam >= 1 && typeParam <= 4) ? typeParam - 1 : 0;
+  // Get type from URL path: /result/leader, /result/ready, etc.
+  const pathParts = window.location.pathname.split('/');
+  const typeParam = pathParts[pathParts.length - 1] || 'leader';
+  const initialType = typeKeys.includes(typeParam) ? typeKeys.indexOf(typeParam) : 0;
 
   const [copied, setCopied] = useState(false);
   const t = types[initialType];
   const journeyPos = [8, 33, 60, 88];
 
   // Update OG meta tags dynamically (for client-side, won't affect crawlers)
+  const typeKey = typeKeys[initialType];
   useEffect(() => {
     document.getElementById('og-title').content = t.ogTitle;
     document.getElementById('og-desc').content = t.ogDesc;
-    document.getElementById('og-image').content = `${BASE_URL}/og/type${t.id}.png`;
-    document.getElementById('og-url').content = `${BASE_URL}/result?type=${t.id}`;
+    document.getElementById('og-image').content = `${BASE_URL}/og/${typeKey}.png`;
+    document.getElementById('og-url').content = `${BASE_URL}/result/${typeKey}`;
     document.getElementById('tw-title').content = t.ogTitle;
     document.getElementById('tw-desc').content = t.ogDesc;
-    document.getElementById('tw-image').content = `${BASE_URL}/og/type${t.id}.png`;
+    document.getElementById('tw-image').content = `${BASE_URL}/og/${typeKey}.png`;
     document.title = `${t.typeName} | AI 준비도 테스트 결과`;
-  }, [t]);
+  }, [t, typeKey]);
 
   const handleShare = async () => {
-    const shareUrl = `${BASE_URL}/result?type=${t.id}`;
+    const shareUrl = `${BASE_URL}/result/${typeKey}`;
     try {
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
