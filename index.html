@@ -7,10 +7,10 @@
   <meta name="description" content="AI 기본법 시행 전, 우리 회사의 AI 도입 준비 수준을 진단해보세요.">
   <meta property="og:title" content="🤖 우리 회사 AI 도입 준비도 테스트">
   <meta property="og:description" content="12문항으로 진단하는 AI 도입 준비 수준. 32개 보험사 대비 내 위치는?">
-  <meta property="og:image" content="og-image.png">
+  <meta property="og:image" content="https://kiiisworking.vercel.app/og-image.png">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="og-image.png">
+  <meta name="twitter:image" content="https://kiiisworking.vercel.app/og-image.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
@@ -260,14 +260,6 @@ function selectAnswer(score){
 }
 
 function restart(){screen='home';currentQ=0;answers=[];render();}
-
-function shareResult(){
-  const total=answers.reduce((a,b)=>a+b,0);
-  const r=getResult(total);
-  const text=`${r.emoji} 우리 회사 AI 도입 준비도 테스트\n\n결과: ${r.type}\n"${r.title}"\n\n📊 ${total}/${Q.length*4}점\n\n🔗 나도 테스트하기\n${location.href}`;
-  if(navigator.share){navigator.share({text}).catch(()=>{});}
-  else{navigator.clipboard.writeText(text);showToast();}
-}
 
 function copyLink(){navigator.clipboard.writeText(location.href);showToast();}
 
