@@ -7,6 +7,10 @@
   <meta name="description" content="AI 기본법 시행 전, 우리 회사의 AI 도입 준비 수준을 진단해보세요.">
   <meta property="og:title" content="🤖 우리 회사 AI 도입 준비도 테스트">
   <meta property="og:description" content="12문항으로 진단하는 AI 도입 준비 수준. 32개 보험사 대비 내 위치는?">
+  <meta property="og:image" content="og-image.png">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="og-image.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
@@ -20,7 +24,7 @@
 const C={regulation:{name:'규제 대응력',icon:'⚖️',questions:[0,1,2],industryAvg:45},infrastructure:{name:'기술 인프라',icon:'🔧',questions:[3,4],industryAvg:52},governance:{name:'AI 거버넌스',icon:'🛡️',questions:[5,6,7],industryAvg:38},talent:{name:'조직·인재',icon:'👥',questions:[8,9],industryAvg:41},application:{name:'활용 수준',icon:'🚀',questions:[10,11],industryAvg:48}};
 
 const Q=[
-{q:"AI 기본법(2026.1.22 시행)\n우리 회사 대응 상황은?",s:"인공지능 발전과 신뢰 기반 조성 등에 관한 기본법",c:'regulation',e:"⚖️",o:["AI 기본법이 뭔지 모르겠어요","시행된다는 건 알지만 내용은...","주요 조항은 파악, 대응 검토 중","고영향 AI 분류 등 내부정책 반영 완료"]},
+{q:"AI 기본법(2026.1.22 시행)\n우리 회사 대응 현황은?",s:"인공지능 발전과 신뢰 기반 조성 등에 관한 기본법",c:'regulation',e:"⚖️",o:["AI 기본법이 뭔지 모르겠어요","시행된 건 알지만 내용은...","주요 조항은 파악, 대응 검토 중","고영향 AI 분류 등 내부정책 반영 완료"]},
 {q:"금융위 'AI 7대 원칙' 중\n우리 회사가 가장 취약한 영역은?",s:"금융분야 AI 가이드라인 7대 원칙 (2024.12)",c:'regulation',e:"📋",o:["7대 원칙이 뭔지 모르겠어요","들어봤는데 뭐가 취약한지는...","취약점은 알지만 개선 계획은 없어요","취약 영역 파악 후 개선 로드맵 수립"]},
 {q:"EU AI Act, EIOPA 가이드라인 등\n글로벌 AI 규제 동향 파악 수준은?",s:"EIOPA AI Governance Report 2025",c:'regulation',e:"🌍",o:["해외 규제까지 신경 쓸 여유가...","EU AI Act 정도는 들어봤어요","주요 규제 파악, 국내 적용 검토 중","글로벌 규제 대응 TF 운영 중"]},
 {q:"생성형 AI 도입 시 '망분리' 이슈,\n어떻게 해결하고 있나요?",s:"금융분야 망분리 개선 로드맵 (2024.8)",c:'infrastructure',e:"🔐",o:["망분리 때문에 AI 도입 못하는 중","일부 부서만 예외 승인받아 사용","샌드박스 신청 또는 온프레미스 검토 중","온프레미스 LLM 구축 또는 SaaS 연동 완료"]},
@@ -36,16 +40,16 @@ const Q=[
 
 const R={
 leader:{type:"AI 선도 기업",emoji:"🏆",title:"업계 상위 5% 수준",range:[42,48],gradient:"from-orange-500 via-rose-500 to-pink-500",bg:"from-orange-50 to-rose-50",
-analysis:{benchmark:"삼성화재·교보생명·KB손해보험 등 AI 선도사와 유사한 수준입니다.",insight:"AI 기본법 시행(2026.1) 이후 금융당국의 상시 모니터링이 시작되면, '잘하고 있다'가 아니라 '증명할 수 있다'가 중요해집니다.",regulation:"금융위 통합 가이드라인(2026.1Q)에서 요구하는 '고영향 AI 안전성 평가' 체계를 선제적으로 구축하세요."},
+analysis:{benchmark:"삼성화재·교보생명·KB손해보험 등 AI 선도사와 유사한 수준입니다.",insight:"AI 기본법이 시행된 지금, 금융당국의 상시 모니터링이 시작됩니다. '잘하고 있다'가 아니라 '증명할 수 있다'가 중요해집니다.",regulation:"금융위 통합 가이드라인(2026.1Q)에서 요구하는 '고영향 AI 안전성 평가' 체계를 선제적으로 구축하세요."},
 recs:[{name:"AI 최고 경영자 과정",tag:"리더십",desc:"C-Level AI 전략 수립"},{name:"보험사 AI 거버넌스 심화",tag:"심화",desc:"감사 가능한 AI 내부통제"}]},
 ready:{type:"AI 도입 준비 완료",emoji:"✅",title:"업계 상위 20% 수준",range:[32,41],gradient:"from-orange-400 via-amber-500 to-yellow-500",bg:"from-amber-50 to-yellow-50",
 analysis:{benchmark:"국내 32개 보험사 중 AI 도입을 본격 추진 중인 기업군에 해당합니다.",insight:"기본기는 갖췄으니 파일럿 프로젝트로 실전 경험을 축적할 때입니다. 업계 IT 예산의 67%가 반복업무 자동화에 집중되어 있습니다.",regulation:"2026년 1분기 금융분야 AI 가이드라인 통합본이 나오면 규칙이 더 명확해집니다. XAI 역량을 미리 갖춰두세요."},
 recs:[{name:"금융 AI핵심기술 연구",tag:"실무",desc:"XAI·MLOps 심화 과정"},{name:"AI활용 업스킬링",tag:"필수",desc:"직무별 AI 적용 실습"}]},
 exploring:{type:"AI 탐색 단계",emoji:"🔍",title:"업계 평균 수준",range:[22,31],gradient:"from-amber-400 via-orange-400 to-rose-400",bg:"from-orange-50 to-amber-50",
-analysis:{benchmark:"국내 보험사 평균 수준입니다. 많은 회사들이 챗봇·RPA 수준에 머물러 있습니다.",insight:"AI 기본법, 7대 원칙... 들어는 봤는데 와닿지 않는 건 당연합니다. 하지만 2026년 1월부터는 '몰랐어요'가 면책 사유가 되지 않습니다.",regulation:"EIOPA 2025 보고서에 따르면 AI는 더 이상 '실험'이 아닌 '필수 인프라'입니다."},
+analysis:{benchmark:"국내 보험사 평균 수준입니다. 많은 회사들이 챗봇·RPA 수준에 머물러 있습니다.",insight:"AI 기본법, 7대 원칙... 들어는 봤는데 와닿지 않는 건 당연합니다. 하지만 이제 '몰랐어요'는 면책 사유가 되지 않습니다.",regulation:"EIOPA 2025 보고서에 따르면 AI는 더 이상 '실험'이 아닌 '필수 인프라'입니다."},
 recs:[{name:"AI 핵심역량 아카데미",tag:"입문",desc:"51개 과정 체계적 학습"},{name:"보험 미래 생존의 힘: AI에이전트",tag:"트렌드",desc:"보험업 AI 적용 사례"}]},
 beginning:{type:"AI 여정 시작점",emoji:"🌱",title:"준비가 필요한 단계",range:[12,21],gradient:"from-emerald-400 via-teal-400 to-cyan-400",bg:"from-emerald-50 to-teal-50",
-analysis:{benchmark:"아직 AI 도입 초기 단계입니다. 그러나 국내 32개 보험사가 AI 도입 중이거나 예정입니다.",insight:"삼성화재는 장기보험 90% 이상을 AI 자동심사로 처리하고, 교보생명은 보험금 지급 기간을 업계 평균 대비 50% 단축했습니다.",regulation:"AI 기본법 시행(2026.1.22) 전에 최소한 '고영향 AI'가 무엇인지는 파악해야 합니다."},
+analysis:{benchmark:"아직 AI 도입 초기 단계입니다. 그러나 국내 32개 보험사가 AI 도입 중이거나 예정입니다.",insight:"삼성화재는 장기보험 90% 이상을 AI 자동심사로 처리하고, 교보생명은 보험금 지급 기간을 업계 평균 대비 50% 단축했습니다.",regulation:"AI 기본법이 시행된 지금, '고영향 AI'가 무엇인지 빠르게 파악해야 합니다."},
 recs:[{name:"디지털 자산 첫걸음",tag:"무료",desc:"GRVT 협력 기초과정"},{name:"AI카피라이터 마스터 클래스",tag:"체험",desc:"생성형 AI 실습"}]}
 };
 
@@ -80,14 +84,14 @@ function render(){
           <div class="relative bg-slate-800/80 backdrop-blur-xl rounded-3xl overflow-hidden border border-slate-700/50">
             <div class="bg-gradient-to-r from-orange-500 via-rose-500 to-amber-500 p-8 text-center">
               <div class="text-5xl mb-4">🤖</div>
-              <div class="inline-block px-3 py-1 bg-white/20 rounded-full text-xs font-medium text-white/90 mb-3">보험연수원 AI전략팀</div>
+              <div class="inline-block px-3 py-1 bg-white/20 rounded-full text-xs font-medium text-white/90 mb-3">보험연수원</div>
               <h1 class="text-2xl font-bold text-white leading-tight">우리 회사,<br/>AI 도입 준비 됐을까?</h1>
             </div>
             <div class="p-6 space-y-5">
               <div class="space-y-3">
                 <div class="flex items-center gap-4 p-3 rounded-xl bg-slate-700/30 border border-slate-600/30">
                   <span class="text-2xl">⚖️</span>
-                  <div><div class="font-semibold text-white text-sm">AI 기본법 D-Day</div><div class="text-slate-400 text-xs">2026.1.22 시행</div></div>
+                  <div><div class="font-semibold text-white text-sm">AI 기본법 시행 중</div><div class="text-slate-400 text-xs">2026.1.22 시행</div></div>
                 </div>
                 <div class="flex items-center gap-4 p-3 rounded-xl bg-slate-700/30 border border-slate-600/30">
                   <span class="text-2xl">📊</span>
@@ -218,7 +222,7 @@ function render(){
           <h3 class="font-bold text-slate-800 mb-3 text-sm">📚 추천 교육과정</h3>
           <div class="space-y-2">
             ${result.recs.map(c=>`
-              <a href="https://www.in.or.kr/main/sukang/reg/cybertraining.do" target="_blank" rel="noopener" class="block p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition-all group border border-slate-100">
+              <a href="https://www.in.or.kr/" target="_blank" rel="noopener" class="block p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition-all group border border-slate-100">
                 <div class="flex items-center justify-between">
                   <div>
                     <div class="font-semibold text-slate-800 text-sm group-hover:text-orange-600">${c.name}</div>
@@ -236,7 +240,7 @@ function render(){
 
         <button onclick="copyLink()" class="w-full py-3.5 rounded-xl bg-gradient-to-r ${result.gradient} text-white font-semibold text-sm active:scale-[0.98] transition-transform">🔗 링크 복사</button>
         <button onclick="restart()" class="w-full py-3 rounded-xl bg-slate-100 text-slate-500 font-medium text-sm active:scale-[0.98] transition-transform">다시 테스트하기</button>
-        <div class="text-center text-slate-400 text-xs pt-2">보험연수원 AI전략팀 · in.or.kr</div>
+        <div class="text-center text-slate-400 text-xs pt-2">보험연수원 · in.or.kr</div>
       </div>
     </div>`;
   }
