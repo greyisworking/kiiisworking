@@ -4,10 +4,5 @@
       "source": "/result",
       "destination": "/api/og-result"
     }
-  ],
-  "functions": {
-    "api/og-result.js": {
-      "runtime": "edge"
-    }
-  }
+  ]
 }
