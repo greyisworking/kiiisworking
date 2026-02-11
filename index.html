@@ -14,8 +14,13 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
-    *{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
-    html,body{min-height:100vh;margin:0}
+    *{font-family:'Pretendard Variable','Pretendard',-apple-system,'Apple SD Gothic Neo',sans-serif;-webkit-tap-highlight-color:transparent;box-sizing:border-box}
+    html,body{min-height:100vh;margin:0;padding:0}
+    #app{min-height:100vh}
+    .glass-card{background:rgba(255,255,255,0.72);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-radius:20px;border:1px solid rgba(255,255,255,0.6);box-shadow:0 2px 16px rgba(0,0,0,0.04),0 0.5px 0 rgba(255,255,255,0.8) inset}
+    .glass-card-dark{background:rgba(255,255,255,0.45);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:16px;border:1px solid rgba(255,255,255,0.5)}
+    .btn-primary{background:linear-gradient(135deg,#E8590C 0%,#D9480F 100%);color:#fff;font-weight:700;border:none;border-radius:14px;box-shadow:0 4px 20px rgba(232,89,12,0.28);cursor:pointer;transition:transform 0.15s}
+    .btn-primary:active{transform:scale(0.98)}
   </style>
 </head>
 <body>
@@ -77,34 +82,32 @@ function render(){
 
   if(screen==='home'){
     app.innerHTML=`
-    <div class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
-      <div class="max-w-sm w-full">
-        <div class="relative">
-          <div class="absolute -inset-1 bg-gradient-to-r from-orange-500 via-rose-500 to-amber-500 rounded-3xl blur-xl opacity-30"></div>
-          <div class="relative bg-slate-800/80 backdrop-blur-xl rounded-3xl overflow-hidden border border-slate-700/50">
-            <div class="bg-gradient-to-r from-orange-500 via-rose-500 to-amber-500 p-8 text-center">
-              <div class="text-5xl mb-4">🤖</div>
-              <div class="inline-block px-3 py-1 bg-white/20 rounded-full text-xs font-medium text-white/90 mb-3">보험연수원</div>
-              <h1 class="text-2xl font-bold text-white leading-tight">우리 회사,<br/>AI 도입 준비 됐을까?</h1>
-            </div>
-            <div class="p-6 space-y-5">
-              <div class="space-y-3">
-                <div class="flex items-center gap-4 p-3 rounded-xl bg-slate-700/30 border border-slate-600/30">
-                  <span class="text-2xl">⚖️</span>
-                  <div><div class="font-semibold text-white text-sm">AI 기본법 시행 중</div><div class="text-slate-400 text-xs">2026.1.22 시행</div></div>
-                </div>
-                <div class="flex items-center gap-4 p-3 rounded-xl bg-slate-700/30 border border-slate-600/30">
-                  <span class="text-2xl">📊</span>
-                  <div><div class="font-semibold text-white text-sm">5개 영역 분석</div><div class="text-slate-400 text-xs">규제·인프라·거버넌스·인재·활용</div></div>
-                </div>
-                <div class="flex items-center gap-4 p-3 rounded-xl bg-slate-700/30 border border-slate-600/30">
-                  <span class="text-2xl">🏢</span>
-                  <div><div class="font-semibold text-white text-sm">업계 벤치마크</div><div class="text-slate-400 text-xs">32개 보험사 대비 내 위치</div></div>
-                </div>
+    <div style="min-height:100vh;background:linear-gradient(180deg,#F0F2F5 0%,#E8EAEF 100%);display:flex;align-items:center;justify-content:center;padding:16px">
+      <div style="max-width:400px;width:100%">
+        <div class="glass-card" style="overflow:hidden">
+          <div style="background:linear-gradient(160deg,#FFF7F3 0%,#FFE8DC 50%,#FFDCC8 100%);padding:34px 24px 30px;text-align:center;position:relative">
+            <div style="font-size:52px;margin-bottom:10px">🤖</div>
+            <div style="display:inline-block;font-size:11px;font-weight:600;color:#E8590C;background:rgba(255,255,255,0.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:5px 14px;border-radius:20px;margin-bottom:12px">보험연수원</div>
+            <h1 style="font-size:26px;font-weight:800;color:#1A1A1A;line-height:1.25;margin:0 0 6px 0">우리 회사,<br/>AI 도입 준비 됐을까?</h1>
+            <p style="font-size:14px;color:#555;line-height:1.55;margin:0">12문항으로 진단하는 AI 도입 준비 수준</p>
+          </div>
+          <div style="padding:20px 18px">
+            <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
+              <div class="glass-card-dark" style="display:flex;align-items:center;gap:14px;padding:14px 16px">
+                <span style="font-size:24px">⚖️</span>
+                <div><div style="font-size:14px;font-weight:600;color:#1A1A1A">AI 기본법 시행 중</div><div style="font-size:12px;color:#868E96;margin-top:2px">2026.1.22 시행</div></div>
               </div>
-              <button onclick="screen='quiz';render();" class="w-full py-4 bg-gradient-to-r from-orange-500 via-rose-500 to-amber-500 text-white font-bold text-lg rounded-2xl shadow-lg shadow-orange-500/25 active:scale-[0.98] transition-transform">테스트 시작하기</button>
-              <p class="text-center text-slate-500 text-xs">12문항 · 약 3분 소요</p>
+              <div class="glass-card-dark" style="display:flex;align-items:center;gap:14px;padding:14px 16px">
+                <span style="font-size:24px">📊</span>
+                <div><div style="font-size:14px;font-weight:600;color:#1A1A1A">5개 영역 분석</div><div style="font-size:12px;color:#868E96;margin-top:2px">규제·인프라·거버넌스·인재·활용</div></div>
+              </div>
+              <div class="glass-card-dark" style="display:flex;align-items:center;gap:14px;padding:14px 16px">
+                <span style="font-size:24px">🏢</span>
+                <div><div style="font-size:14px;font-weight:600;color:#1A1A1A">업계 벤치마크</div><div style="font-size:12px;color:#868E96;margin-top:2px">32개 보험사 대비 내 위치</div></div>
+              </div>
             </div>
+            <button onclick="screen='quiz';render();" class="btn-primary" style="width:100%;padding:16px 0;font-size:15px">테스트 시작하기</button>
+            <p style="text-align:center;color:#ADB5BD;font-size:12px;margin:12px 0 0 0">12문항 · 약 3분 소요</p>
           </div>
         </div>
       </div>
@@ -113,41 +116,38 @@ function render(){
   else if(screen==='quiz'){
     const q=Q[currentQ];
     app.innerHTML=`
-    <div class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4 flex items-center justify-center">
-      <div class="max-w-sm w-full">
-        <div class="mb-6">
-          <div class="flex justify-between items-center text-sm mb-2">
-            <span class="text-slate-400 font-medium">Q${currentQ+1} / ${Q.length}</span>
-            <span class="text-orange-400 font-bold">${Math.round(progress)}%</span>
+    <div style="min-height:100vh;background:linear-gradient(180deg,#F0F2F5 0%,#E8EAEF 100%);padding:16px;display:flex;align-items:center;justify-content:center">
+      <div style="max-width:400px;width:100%">
+        <div style="margin-bottom:20px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <span style="font-size:13px;font-weight:600;color:#868E96">Q${currentQ+1} / ${Q.length}</span>
+            <span style="font-size:14px;font-weight:700;color:#E8590C">${Math.round(progress)}%</span>
           </div>
-          <div class="h-1.5 bg-slate-700 rounded-full overflow-hidden">
-            <div class="h-full bg-gradient-to-r from-orange-500 via-rose-500 to-amber-500 transition-all duration-500" style="width:${progress}%"></div>
+          <div style="height:6px;background:rgba(0,0,0,0.06);border-radius:100px;overflow:hidden">
+            <div style="height:100%;background:linear-gradient(90deg,#E8590C,#D9480F);border-radius:100px;transition:width 0.5s;width:${progress}%"></div>
           </div>
-          <div class="flex justify-center mt-3">
-            <span class="text-xs text-slate-500 bg-slate-700/50 px-3 py-1 rounded-full">${C[q.c].icon} ${C[q.c].name}</span>
-          </div>
-        </div>
-        <div class="relative ${transitioning?'opacity-50 scale-95':'opacity-100 scale-100'} transition-all duration-300">
-          <div class="absolute -inset-1 bg-gradient-to-r from-orange-500/20 via-rose-500/20 to-amber-500/20 rounded-3xl blur-xl"></div>
-          <div class="relative bg-slate-800/90 rounded-3xl p-6 border border-slate-700/50">
-            <div class="text-center mb-5">
-              <span class="text-4xl mb-3 block">${q.e}</span>
-              <h2 class="text-base font-bold text-white leading-snug whitespace-pre-line">${q.q}</h2>
-              <p class="text-[10px] text-slate-500 mt-2 px-2">📎 ${q.s}</p>
-            </div>
-            <div class="space-y-2.5">
-              ${q.o.map((opt,i)=>`
-                <button onclick="selectAnswer(${i+1})" ${transitioning?'disabled':''} class="w-full p-3.5 rounded-xl text-left transition-all bg-slate-700/50 text-slate-200 hover:bg-gradient-to-r hover:from-orange-500/20 hover:to-rose-500/20 border border-slate-600/50 active:scale-[0.98] group">
-                  <div class="flex items-center gap-3">
-                    <div class="w-6 h-6 rounded-full bg-gradient-to-r from-orange-500 to-rose-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0 group-hover:scale-110 transition-transform">${i+1}</div>
-                    <span class="text-sm leading-snug">${opt}</span>
-                  </div>
-                </button>
-              `).join('')}
-            </div>
+          <div style="display:flex;justify-content:center;margin-top:10px">
+            <span style="font-size:12px;color:#868E96;background:rgba(255,255,255,0.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:5px 14px;border-radius:20px">${C[q.c].icon} ${C[q.c].name}</span>
           </div>
         </div>
-        <div class="text-center mt-4 text-slate-500 text-xs">선택하면 자동으로 다음 문항으로 이동</div>
+        <div class="glass-card" style="padding:24px 20px;opacity:${transitioning?'0.5':'1'};transform:scale(${transitioning?'0.97':'1'});transition:all 0.3s">
+          <div style="text-align:center;margin-bottom:20px">
+            <span style="font-size:40px;display:block;margin-bottom:12px">${q.e}</span>
+            <h2 style="font-size:16px;font-weight:700;color:#1A1A1A;line-height:1.5;white-space:pre-line;margin:0">${q.q}</h2>
+            <p style="font-size:11px;color:#ADB5BD;margin:10px 0 0 0">📎 ${q.s}</p>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            ${q.o.map((opt,i)=>`
+              <button onclick="selectAnswer(${i+1})" ${transitioning?'disabled':''} style="width:100%;padding:14px 16px;border-radius:14px;text-align:left;background:rgba(255,255,255,0.55);border:1px solid rgba(255,255,255,0.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);cursor:pointer;transition:all 0.15s" onmouseover="this.style.background='rgba(232,89,12,0.08)'" onmouseout="this.style.background='rgba(255,255,255,0.55)'">
+                <div style="display:flex;align-items:center;gap:12px">
+                  <div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#E8590C,#D9480F);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;flex-shrink:0">${i+1}</div>
+                  <span style="font-size:14px;line-height:1.45;color:#1A1A1A">${opt}</span>
+                </div>
+              </button>
+            `).join('')}
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:14px;font-size:12px;color:#ADB5BD">선택하면 자동으로 다음 문항으로 이동</div>
       </div>
     </div>`;
   }
@@ -252,10 +252,20 @@ function selectAnswer(score){
   answers.push(score);
   render();
   setTimeout(()=>{
-    if(currentQ<Q.length-1){currentQ++;}
-    else{screen='result';}
-    transitioning=false;
-    render();
+    if(currentQ<Q.length-1){
+      currentQ++;
+      transitioning=false;
+      render();
+    } else {
+      // 점수 계산 후 결과 페이지로 리다이렉트
+      const total=answers.reduce((a,b)=>a+b,0);
+      let type;
+      if(total>=42) type=1;      // 42-48점: AI 선도 기업
+      else if(total>=32) type=2; // 32-41점: AI 도입 준비 완료
+      else if(total>=22) type=3; // 22-31점: AI 탐색 단계
+      else type=4;               // 12-21점: AI 여정 시작점
+      window.location.href='/result?type='+type;
+    }
   },250);
 }
 
