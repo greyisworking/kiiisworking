@@ -27,8 +27,14 @@
   </script>
   <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
-    *{font-family:'Pretendard Variable','Pretendard',-apple-system,'Apple SD Gothic Neo',sans-serif;-webkit-tap-highlight-color:transparent;box-sizing:border-box;word-break:keep-all;overflow-wrap:break-word}
-    h1,h2,h3,.section-title{white-space:nowrap}
+    *{font-family:'Pretendard Variable','Pretendard',-apple-system,'Apple SD Gothic Neo',sans-serif;-webkit-tap-highlight-color:transparent;box-sizing:border-box}
+    /* 선택적 줄바꿈 방지 */
+    .section-title{white-space:nowrap}
+    .domain-name{white-space:nowrap}
+    .level-tag{white-space:nowrap}
+    .hero-badge{white-space:nowrap}
+    .course-meta{display:flex;flex-wrap:nowrap;align-items:center;gap:8px}
+    .course-name{word-break:keep-all;overflow-wrap:break-word}
     html,body{min-height:100vh;margin:0;padding:0;background:linear-gradient(180deg,#F0F2F5 0%,#E8EAEF 100%)}
     #root{min-height:100vh;opacity:0;animation:pageIn 0.4s ease-out forwards}
     @keyframes pageIn{from{opacity:0}to{opacity:1}}
@@ -271,7 +277,7 @@ function DomainBar({ domain, accent }) {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 7 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <span style={{ fontSize: 15 }}>{domain.icon}</span>
-          <span style={{ fontSize: 14, fontWeight: 600, color: "#1A1A1A" }}>{domain.name}</span>
+          <span className="domain-name" style={{ fontSize: 14, fontWeight: 600, color: "#1A1A1A" }}>{domain.name}</span>
           {weak && (
             <span style={{
               fontSize: 10.5, background: "rgba(224,49,49,0.08)", color: "#E03131",
@@ -308,7 +314,7 @@ function GlassCard({ children, style = {} }) {
 
 function Label({ children }) {
   return (
-    <div style={{ fontSize: 15, fontWeight: 700, color: "#1A1A1A", marginBottom: 14 }}>
+    <div className="section-title" style={{ fontSize: 15, fontWeight: 700, color: "#1A1A1A", marginBottom: 14 }}>
       {children}
     </div>
   );
@@ -481,7 +487,7 @@ function ResultPage() {
 
             <div style={{ position: "relative", zIndex: 1, padding: "34px 24px 30px" }}>
               <div style={{ fontSize: 52, marginBottom: 10 }}>{t.emoji}</div>
-              <div style={{
+              <div className="hero-badge" style={{
                 display: "inline-block", fontSize: 11, fontWeight: 600,
                 color: t.accent, background: "rgba(255,255,255,0.9)",
                 padding: "5px 14px", borderRadius: 20, marginBottom: 12,
@@ -676,8 +682,8 @@ function ResultPage() {
                   width: "100%",
                 }}>
                   {/* 1줄: 수준 + 날짜 + 시간 */}
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                    <span style={{
+                  <div className="course-meta" style={{ marginBottom: 10 }}>
+                    <span className="level-tag" style={{
                       fontSize: 12, fontWeight: 700,
                       background: c.level === "초급" ? "#E6F4EA" : c.level === "중급" ? "#E3F2FD" : "#FFF3E0",
                       color: c.level === "초급" ? "#1B7D2C" : c.level === "중급" ? "#1565C0" : "#E65100",
@@ -692,10 +698,9 @@ function ResultPage() {
                     </span>
                   </div>
                   {/* 2줄: 과목명 */}
-                  <div style={{
+                  <div className="course-name" style={{
                     fontSize: 15, fontWeight: 700, color: "#212529",
                     lineHeight: 1.5, marginBottom: 6,
-                    wordBreak: "keep-all", overflowWrap: "break-word",
                   }}>
                     {c.name}
                   </div>
