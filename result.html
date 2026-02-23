@@ -393,22 +393,27 @@ function ResultPage() {
   const handleSaveImage = async () => {
     setIsCapturing(true);
     const shareSection = document.getElementById('share-buttons-section');
+    const element = document.getElementById('result-capture-area');
+    const originalWidth = element?.style.width;
 
     try {
-      const element = document.getElementById('result-capture-area');
       if (!element) return;
 
       // 공유 버튼 섹션 숨기기
       if (shareSection) shareSection.style.display = 'none';
 
+      // 캡처 전 너비 고정 (모바일 기준 416px)
+      element.style.width = '416px';
+
       // 폰트 로딩 완료 대기
       await document.fonts.ready;
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 150));
 
       // dom-to-image-more로 캡처
       const dataUrl = await domtoimage.toPng(element, {
         quality: 1,
         scale: 2,
+        width: 416,
         style: { transform: 'none' }
       });
 
@@ -421,6 +426,8 @@ function ResultPage() {
       console.error('이미지 저장 실패:', err);
       alert('이미지 저장에 실패했습니다. 다시 시도해주세요.');
     } finally {
+      // 원래 너비 복원
+      if (element) element.style.width = originalWidth || '';
       // 공유 버튼 섹션 복원
       if (shareSection) shareSection.style.display = '';
       setIsCapturing(false);
@@ -683,7 +690,7 @@ function ResultPage() {
                       color: "#666",
                     }}>{c.duration}</span>
                   </div>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: "#212529", lineHeight: 1.45, marginBottom: 4 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#212529", lineHeight: 1.45, marginBottom: 4, wordBreak: "keep-all", overflowWrap: "break-word" }}>
                     {c.name}
                   </div>
                   <div style={{ fontSize: 11, color: "#6C757D" }}>{c.code}</div>
