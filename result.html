@@ -253,12 +253,10 @@ const BASE_URL = "https://kiiisworking.vercel.app";
 
 /* ── Glass Card ── */
 const glass = {
-  background: "rgba(255,255,255,0.72)",
-  backdropFilter: "blur(16px)",
-  WebkitBackdropFilter: "blur(16px)",
-  borderRadius: 20,
-  border: "1px solid rgba(255,255,255,0.6)",
-  boxShadow: "0 2px 16px rgba(0,0,0,0.04), 0 0.5px 0 rgba(255,255,255,0.8) inset",
+  background: "#FFFFFF",
+  borderRadius: 16,
+  border: "1px solid #E9ECEF",
+  boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
 };
 
 /* ── Shared Components ── */
@@ -397,6 +395,36 @@ function ResultPage() {
       const element = document.getElementById('result-capture-area');
       if (!element) return;
 
+      // 캡처 전 스타일 강제 변경 (html2canvas가 backdrop-filter, rgba를 못 잡음)
+      const elementsToFix = element.querySelectorAll('div');
+      const originalStyles = [];
+
+      elementsToFix.forEach((el, idx) => {
+        const style = window.getComputedStyle(el);
+        const bg = style.backgroundColor;
+        const bdFilter = style.backdropFilter;
+
+        // rgba 배경이나 backdrop-filter가 있는 요소 감지
+        if (bg.includes('rgba') || bdFilter !== 'none') {
+          originalStyles.push({
+            el,
+            bg: el.style.backgroundColor,
+            bdFilter: el.style.backdropFilter,
+            wkBdFilter: el.style.webkitBackdropFilter,
+            color: el.style.color,
+          });
+
+          // 불투명 스타일로 강제 변경
+          if (bg.includes('rgba(255, 255, 255')) {
+            el.style.backgroundColor = '#FFFFFF';
+          } else if (bg.includes('rgba(0, 0, 0')) {
+            el.style.backgroundColor = '#F5F5F5';
+          }
+          el.style.backdropFilter = 'none';
+          el.style.webkitBackdropFilter = 'none';
+        }
+      });
+
       const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
@@ -405,6 +433,14 @@ function ResultPage() {
         logging: false,
         scrollY: -window.scrollY,
         scrollX: 0,
+      });
+
+      // 캡처 후 원래 스타일 복원
+      originalStyles.forEach(({ el, bg, bdFilter, wkBdFilter, color }) => {
+        el.style.backgroundColor = bg;
+        el.style.backdropFilter = bdFilter;
+        el.style.webkitBackdropFilter = wkBdFilter;
+        if (color) el.style.color = color;
       });
 
       const link = document.createElement('a');
@@ -448,9 +484,9 @@ function ResultPage() {
             background: t.heroBg,
             textAlign: "center", padding: 0,
             overflow: "hidden", position: "relative",
-            borderRadius: 0,
-            margin: "0 -12px",
-            borderTop: "none", borderBottom: "1px solid rgba(255,255,255,0.5)",
+            borderRadius: 16,
+            marginBottom: 14,
+            border: "1px solid rgba(255,255,255,0.5)",
           }}>
             <svg style={{ position: "absolute", top: 14, left: -8, opacity: 0.15 }} width="88" height="42" viewBox="0 0 88 42" fill={t.accent}>
               <ellipse cx="44" cy="29" rx="41" ry="12"/><ellipse cx="28" cy="21" rx="19" ry="14"/><ellipse cx="55" cy="19" rx="23" ry="16"/>
@@ -539,13 +575,12 @@ function ResultPage() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
               {industryStats.map((s, i) => (
                 <div key={i} style={{
-                  background: "rgba(255,255,255,0.55)",
-                  backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
+                  background: "#F8F9FA",
                   borderRadius: 14, padding: "13px 14px",
-                  border: "1px solid rgba(255,255,255,0.6)",
+                  border: "1px solid #E9ECEF",
                 }}>
-                  <div style={{ fontSize: 12, color: "#999", marginBottom: 4 }}>{s.label}</div>
-                  <div style={{ fontSize: 17, fontWeight: 700, color: "#1A1A1A" }}>{s.value}</div>
+                  <div style={{ fontSize: 12, color: "#666", marginBottom: 4 }}>{s.label}</div>
+                  <div style={{ fontSize: 17, fontWeight: 700, color: "#212529" }}>{s.value}</div>
                 </div>
               ))}
             </div>
@@ -558,21 +593,21 @@ function ResultPage() {
               <div style={{ fontSize: 13, fontWeight: 600, color: "#495057", marginBottom: 6 }}>🎯 벤치마크 포지션</div>
               <div style={{
                 fontSize: 13.5, color: "#495057", lineHeight: 1.75,
-                padding: "13px 16px", background: "rgba(0,0,0,0.025)", borderRadius: 14,
+                padding: "13px 16px", background: "#F5F5F5", borderRadius: 14,
               }}>{t.benchmarkPosition}</div>
             </div>
             <div style={{ marginBottom: 16 }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: "#495057", marginBottom: 6 }}>💡 핵심 인사이트</div>
               <div style={{
                 fontSize: 13.5, color: "#495057", lineHeight: 1.75,
-                padding: "13px 16px", background: "rgba(255,212,59,0.10)", borderRadius: 14,
+                padding: "13px 16px", background: "#FFFDE7", borderRadius: 14,
               }}>{t.insight}</div>
             </div>
             <div>
               <div style={{ fontSize: 13, fontWeight: 600, color: "#495057", marginBottom: 6 }}>⚖️ 규제 대응 포인트</div>
               <div style={{
                 fontSize: 13.5, color: "#495057", lineHeight: 1.75,
-                padding: "13px 16px", background: "rgba(255,146,43,0.08)", borderRadius: 14,
+                padding: "13px 16px", background: "#FFF3E0", borderRadius: 14,
               }}>{t.regulatoryPoint}</div>
             </div>
           </GlassCard>
@@ -580,8 +615,8 @@ function ResultPage() {
           {/* ─── WEAK AREA ─── */}
           {t.weakArea && (
             <GlassCard style={{
-              background: "rgba(255,245,245,0.80)",
-              border: "1px solid rgba(255,200,200,0.5)",
+              background: "#FFF5F5",
+              border: "1px solid #FFCDD2",
             }}>
               <Label>🚨 가장 취약한 영역: {t.weakArea}</Label>
               <div style={{ fontSize: 13.5, color: "#495057", lineHeight: 1.8 }}>
