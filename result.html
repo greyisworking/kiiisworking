@@ -399,53 +399,101 @@ function ResultPage() {
       // 폰트 로딩 완료 대기
       await document.fonts.ready;
 
+      // 추가 대기 (폰트 렌더링 안정화)
+      await new Promise(resolve => setTimeout(resolve, 100));
+
       const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
         allowTaint: true,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: null, // 그라데이션 배경 유지
         logging: false,
         scrollY: -window.scrollY,
         scrollX: 0,
+        windowWidth: element.scrollWidth,
+        windowHeight: element.scrollHeight,
         onclone: (clonedDoc) => {
           // 폰트 강제 적용
-          clonedDoc.body.style.fontFamily = 'Pretendard, -apple-system, BlinkMacSystemFont, sans-serif';
+          const clonedBody = clonedDoc.body;
+          clonedBody.style.fontFamily = "'Pretendard Variable', 'Pretendard', -apple-system, 'Apple SD Gothic Neo', sans-serif";
 
-          // 모든 요소에 스타일 강제 적용
-          const allElements = clonedDoc.querySelectorAll('*');
+          const captureArea = clonedDoc.getElementById('result-capture-area');
+          if (!captureArea) return;
+
+          // 캡처 영역 배경 설정 (그라데이션 유지를 위해)
+          captureArea.style.background = '#FFFFFF';
+
+          // 모든 요소 순회
+          const allElements = captureArea.querySelectorAll('*');
           allElements.forEach(el => {
-            // backdrop-filter 제거
+            // backdrop-filter 제거 (html2canvas 호환성)
             el.style.backdropFilter = 'none';
             el.style.webkitBackdropFilter = 'none';
 
-            // rgba 배경을 불투명으로
-            const bg = window.getComputedStyle(el).backgroundColor;
-            if (bg && bg.includes('rgba')) {
-              el.style.backgroundColor = '#FFFFFF';
+            // 폰트 강제 적용
+            el.style.fontFamily = "'Pretendard Variable', 'Pretendard', -apple-system, sans-serif";
+
+            // 투명 배경을 불투명으로 변환
+            const computedStyle = window.getComputedStyle(el);
+            const bgColor = computedStyle.backgroundColor;
+            if (bgColor && bgColor.includes('rgba') && !bgColor.includes('rgba(0, 0, 0, 0)')) {
+              // rgba를 rgb로 변환 (알파값 무시하고 불투명으로)
+              const match = bgColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+              if (match) {
+                const [, r, g, b] = match;
+                el.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+              }
             }
           });
 
-          // 교육과정 카드 및 텍스트 강제 스타일
-          const captureArea = clonedDoc.getElementById('result-capture-area');
-          if (captureArea) {
-            captureArea.querySelectorAll('div').forEach(el => {
-              const text = el.textContent || '';
-              // 교육과정 관련 요소 감지
-              if (text.includes('추천 교육과정') || text.includes('초급') || text.includes('중급') || text.includes('고급') ||
-                  text.includes('AI-') || text.includes('과정 확인하기') || text.includes('보험연수원')) {
-                el.style.color = '#333333';
-              }
-              // 모든 카드 배경 불투명
-              el.style.backgroundColor = el.style.backgroundColor || '#FFFFFF';
-            });
-          }
+          // 텍스트 색상 강제 적용 (교육과정 섹션)
+          captureArea.querySelectorAll('div, span, a').forEach(el => {
+            const text = el.textContent || '';
+            const computedColor = window.getComputedStyle(el).color;
+
+            // 너무 연한 색상 보정
+            if (computedColor && computedColor.includes('rgba')) {
+              el.style.color = '#333333';
+            }
+
+            // 교육과정 관련 텍스트 강제 색상
+            if (text.includes('추천 교육과정') || text.includes('AI-') ||
+                text.includes('보험연수원') || text.includes('과정 확인하기')) {
+              el.style.color = '#333333';
+              el.style.opacity = '1';
+            }
+          });
+
+          // 교육과정 카드 배경 명확하게
+          captureArea.querySelectorAll('[class*="animate-card"]').forEach(el => {
+            el.style.backgroundColor = '#F8F9FA';
+            el.style.opacity = '1';
+          });
+
+          // 레벨 뱃지 색상 유지
+          captureArea.querySelectorAll('span').forEach(el => {
+            const text = el.textContent || '';
+            if (text === '초급') {
+              el.style.backgroundColor = '#E6F4EA';
+              el.style.color = '#1B7D2C';
+            } else if (text === '중급') {
+              el.style.backgroundColor = '#E3F2FD';
+              el.style.color = '#1565C0';
+            } else if (text === '고급') {
+              el.style.backgroundColor = '#FFF3E0';
+              el.style.color = '#E65100';
+            }
+          });
         },
       });
 
+      // 다운로드 트리거
       const link = document.createElement('a');
       link.download = `AI준비도_${t.typeName}_결과.png`;
-      link.href = canvas.toDataURL('image/png');
+      link.href = canvas.toDataURL('image/png', 1.0);
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
     } catch (err) {
       console.error('이미지 저장 실패:', err);
       alert('이미지 저장에 실패했습니다. 다시 시도해주세요.');
