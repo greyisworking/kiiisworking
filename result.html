@@ -254,9 +254,10 @@ const BASE_URL = "https://kiiisworking.vercel.app";
 /* ── Glass Card ── */
 const glass = {
   background: "#FFFFFF",
-  borderRadius: 16,
-  border: "1px solid #E9ECEF",
-  boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+  borderRadius: 0,
+  border: "none",
+  borderBottom: "1px solid #E9ECEF",
+  boxShadow: "none",
 };
 
 /* ── Shared Components ── */
@@ -395,35 +396,8 @@ function ResultPage() {
       const element = document.getElementById('result-capture-area');
       if (!element) return;
 
-      // 캡처 전 스타일 강제 변경 (html2canvas가 backdrop-filter, rgba를 못 잡음)
-      const elementsToFix = element.querySelectorAll('div');
-      const originalStyles = [];
-
-      elementsToFix.forEach((el, idx) => {
-        const style = window.getComputedStyle(el);
-        const bg = style.backgroundColor;
-        const bdFilter = style.backdropFilter;
-
-        // rgba 배경이나 backdrop-filter가 있는 요소 감지
-        if (bg.includes('rgba') || bdFilter !== 'none') {
-          originalStyles.push({
-            el,
-            bg: el.style.backgroundColor,
-            bdFilter: el.style.backdropFilter,
-            wkBdFilter: el.style.webkitBackdropFilter,
-            color: el.style.color,
-          });
-
-          // 불투명 스타일로 강제 변경
-          if (bg.includes('rgba(255, 255, 255')) {
-            el.style.backgroundColor = '#FFFFFF';
-          } else if (bg.includes('rgba(0, 0, 0')) {
-            el.style.backgroundColor = '#F5F5F5';
-          }
-          el.style.backdropFilter = 'none';
-          el.style.webkitBackdropFilter = 'none';
-        }
-      });
+      // 폰트 로딩 완료 대기
+      await document.fonts.ready;
 
       const canvas = await html2canvas(element, {
         scale: 2,
@@ -433,14 +407,39 @@ function ResultPage() {
         logging: false,
         scrollY: -window.scrollY,
         scrollX: 0,
-      });
+        onclone: (clonedDoc) => {
+          // 폰트 강제 적용
+          clonedDoc.body.style.fontFamily = 'Pretendard, -apple-system, BlinkMacSystemFont, sans-serif';
 
-      // 캡처 후 원래 스타일 복원
-      originalStyles.forEach(({ el, bg, bdFilter, wkBdFilter, color }) => {
-        el.style.backgroundColor = bg;
-        el.style.backdropFilter = bdFilter;
-        el.style.webkitBackdropFilter = wkBdFilter;
-        if (color) el.style.color = color;
+          // 모든 요소에 스타일 강제 적용
+          const allElements = clonedDoc.querySelectorAll('*');
+          allElements.forEach(el => {
+            // backdrop-filter 제거
+            el.style.backdropFilter = 'none';
+            el.style.webkitBackdropFilter = 'none';
+
+            // rgba 배경을 불투명으로
+            const bg = window.getComputedStyle(el).backgroundColor;
+            if (bg && bg.includes('rgba')) {
+              el.style.backgroundColor = '#FFFFFF';
+            }
+          });
+
+          // 교육과정 카드 및 텍스트 강제 스타일
+          const captureArea = clonedDoc.getElementById('result-capture-area');
+          if (captureArea) {
+            captureArea.querySelectorAll('div').forEach(el => {
+              const text = el.textContent || '';
+              // 교육과정 관련 요소 감지
+              if (text.includes('추천 교육과정') || text.includes('초급') || text.includes('중급') || text.includes('고급') ||
+                  text.includes('AI-') || text.includes('과정 확인하기') || text.includes('보험연수원')) {
+                el.style.color = '#333333';
+              }
+              // 모든 카드 배경 불투명
+              el.style.backgroundColor = el.style.backgroundColor || '#FFFFFF';
+            });
+          }
+        },
       });
 
       const link = document.createElement('a');
@@ -484,9 +483,10 @@ function ResultPage() {
             background: t.heroBg,
             textAlign: "center", padding: 0,
             overflow: "hidden", position: "relative",
-            borderRadius: 16,
+            borderRadius: 0,
             marginBottom: 14,
-            border: "1px solid rgba(255,255,255,0.5)",
+            border: "none",
+            borderBottom: "1px solid #E9ECEF",
           }}>
             <svg style={{ position: "absolute", top: 14, left: -8, opacity: 0.15 }} width="88" height="42" viewBox="0 0 88 42" fill={t.accent}>
               <ellipse cx="44" cy="29" rx="41" ry="12"/><ellipse cx="28" cy="21" rx="19" ry="14"/><ellipse cx="55" cy="19" rx="23" ry="16"/>
