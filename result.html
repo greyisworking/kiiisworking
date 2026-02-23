@@ -444,11 +444,13 @@ function ResultPage() {
         <div id="result-capture-area" style={{ background: "#FFFFFF", padding: "12px 0 20px" }}>
 
           {/* ─── HERO ─── */}
-          <GlassCard style={{
+          <div style={{
             background: t.heroBg,
             textAlign: "center", padding: 0,
             overflow: "hidden", position: "relative",
-            border: "1px solid rgba(255,255,255,0.5)",
+            borderRadius: 0,
+            margin: "0 -12px",
+            borderTop: "none", borderBottom: "1px solid rgba(255,255,255,0.5)",
           }}>
             <svg style={{ position: "absolute", top: 14, left: -8, opacity: 0.15 }} width="88" height="42" viewBox="0 0 88 42" fill={t.accent}>
               <ellipse cx="44" cy="29" rx="41" ry="12"/><ellipse cx="28" cy="21" rx="19" ry="14"/><ellipse cx="55" cy="19" rx="23" ry="16"/>
@@ -464,8 +466,7 @@ function ResultPage() {
               <div style={{ fontSize: 52, marginBottom: 10 }}>{t.emoji}</div>
               <div style={{
                 display: "inline-block", fontSize: 11, fontWeight: 600,
-                color: t.accent, background: "rgba(255,255,255,0.65)",
-                backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
+                color: t.accent, background: "rgba(255,255,255,0.9)",
                 padding: "5px 14px", borderRadius: 20, marginBottom: 12,
               }}>
                 {t.tier} · {t.score}
@@ -477,7 +478,7 @@ function ResultPage() {
                 {t.tagline}
               </div>
             </div>
-          </GlassCard>
+          </div>
 
           {/* ─── JOURNEY MAP ─── */}
           <GlassCard>
@@ -624,8 +625,8 @@ function ResultPage() {
           {/* ─── RECOMMENDED COURSES ─── */}
           <GlassCard>
             <Label>📚 추천 교육과정</Label>
-            <div style={{ fontSize: 12, color: "#999", marginTop: -10, marginBottom: 6 }}>{courseTagline}</div>
-            <div style={{ fontSize: 11, color: t.accent, marginBottom: 16, fontWeight: 500 }}>
+            <div style={{ fontSize: 12, color: "#495057", marginTop: -10, marginBottom: 6 }}>{courseTagline}</div>
+            <div style={{ fontSize: 11, color: t.accent, marginBottom: 16, fontWeight: 600 }}>
               ✨ 가까운 일정순 · 보험연수원 정규과정
             </div>
 
@@ -633,32 +634,31 @@ function ResultPage() {
               recommendedCourses.map((c, i) => (
                 <div key={c.id + i} className="animate-card" style={{
                   padding: "14px 16px",
-                  background: "rgba(255,255,255,0.55)",
-                  backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
+                  background: "#F8F9FA",
                   borderRadius: 14, marginBottom: 10,
-                  border: "1px solid rgba(255,255,255,0.5)",
+                  border: "1px solid #E9ECEF",
                 }}>
                   <div style={{ display: "flex", gap: 6, marginBottom: 8, flexWrap: "wrap", alignItems: "center" }}>
                     <span style={{
                       fontSize: 11, fontWeight: 600,
-                      background: c.level === "초급" ? "rgba(47,158,68,0.10)" : c.level === "중급" ? "rgba(25,113,194,0.10)" : "rgba(232,89,12,0.10)",
-                      color: c.level === "초급" ? "#2B8A3E" : c.level === "중급" ? "#1864AB" : "#E8590C",
+                      background: c.level === "초급" ? "#E6F4EA" : c.level === "중급" ? "#E3F2FD" : "#FFF3E0",
+                      color: c.level === "초급" ? "#1B7D2C" : c.level === "중급" ? "#1565C0" : "#E65100",
                       borderRadius: 8, padding: "3px 10px",
                     }}>{c.level}</span>
                     <span style={{
                       fontSize: 11, fontWeight: 600,
-                      background: "rgba(0,0,0,0.04)", color: "#666",
+                      background: "#EBEDEF", color: "#495057",
                       borderRadius: 8, padding: "3px 10px",
                     }}>📅 {c.dateStr}{c.hasMoreDates ? ' 외' : ''}</span>
                     <span style={{
                       fontSize: 11, fontWeight: 500,
-                      color: "#999",
+                      color: "#666",
                     }}>{c.duration}</span>
                   </div>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: "#1A1A1A", lineHeight: 1.45, marginBottom: 4 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#212529", lineHeight: 1.45, marginBottom: 4 }}>
                     {c.name}
                   </div>
-                  <div style={{ fontSize: 11, color: "#ADB5BD" }}>{c.code}</div>
+                  <div style={{ fontSize: 11, color: "#6C757D" }}>{c.code}</div>
                 </div>
               ))
             ) : (
@@ -676,7 +676,7 @@ function ResultPage() {
             }}>
               {t.cta}
             </a>
-            <div style={{ fontSize: 11, color: "#ADB5BD", textAlign: "center", marginTop: 8 }}>
+            <div style={{ fontSize: 11, color: "#6C757D", textAlign: "center", marginTop: 8 }}>
               보험연수원 (in.or.kr)
             </div>
           </GlassCard>
