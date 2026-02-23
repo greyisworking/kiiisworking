@@ -118,7 +118,7 @@ const types = [
       { code: "AI-공공직무", name: "AI로 사업기획, 벤치마킹 조사, 기획서 작성까지", level: "중급", match: "기획력 강화" },
       { code: "AI-인사이트", name: "보험산업 AI 동향 파악부터 서비스 기획까지", level: "고급", match: "전략 수립" },
     ],
-    cta: "취약 영역 보완 과정 보기",
+    cta: "중급 과정 확인하기",
   },
   {
     id: 3, tier: "AI Exploring", score: "22-31점", emoji: "🎫",
@@ -145,7 +145,7 @@ const types = [
       { code: "AI-문건", name: "보험사를 위한 AI 활용 문건 작성부터 활용까지", level: "초급", match: "실무 자동화" },
       { code: "AI-마케팅", name: "생성형 AI로 실시간 트렌드 따라잡기", level: "초급", match: "트렌드 파악" },
     ],
-    cta: "지금 시작할 수 있는 과정 보기",
+    cta: "초급·중급 과정 확인하기",
   },
   {
     id: 4, tier: "AI Starting", score: "12-21점", emoji: "🪑",
@@ -172,7 +172,7 @@ const types = [
       { code: "AI-마케팅", name: "생성형 AI로 실시간 트렌드 따라잡기", level: "초급", match: "AI 첫걸음" },
       { code: "AI-Agent", name: "Google Gems, Opal로 나만의 AI 비서 만들기", level: "초급", match: "생산성 향상" },
     ],
-    cta: "입문 과정부터 시작하기",
+    cta: "초급 과정 확인하기",
   },
 ];
 
@@ -248,7 +248,7 @@ function getRecommendedCourses(typeId) {
   return courses;
 }
 
-const KIIIS_URL = "https://www.in.or.kr";
+const KIIIS_URL = "https://www.in.or.kr/main/sukang/reg/offtraining.do?depth3=T005";
 const BASE_URL = "https://kiiisworking.vercel.app";
 
 /* ── Glass Card ── */
@@ -400,8 +400,11 @@ function ResultPage() {
       const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
-        backgroundColor: '#F0F2F5',
+        allowTaint: true,
+        backgroundColor: '#FFFFFF',
         logging: false,
+        scrollY: -window.scrollY,
+        scrollX: 0,
       });
 
       const link = document.createElement('a');
@@ -438,7 +441,7 @@ function ResultPage() {
       <div style={{ padding: "0 12px 36px" }}>
 
         {/* ─── CAPTURE AREA START ─── */}
-        <div id="result-capture-area" style={{ background: "linear-gradient(180deg, #F0F2F5 0%, #E8EAEF 100%)", padding: "0 0 20px" }}>
+        <div id="result-capture-area" style={{ background: "#FFFFFF", padding: "12px 0 20px" }}>
 
           {/* ─── HERO ─── */}
           <GlassCard style={{
