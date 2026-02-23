@@ -446,43 +446,57 @@ function ResultPage() {
             }
           });
 
-          // 텍스트 색상 강제 적용 (교육과정 섹션)
-          captureArea.querySelectorAll('div, span, a').forEach(el => {
-            const text = el.textContent || '';
-            const computedColor = window.getComputedStyle(el).color;
-
-            // 너무 연한 색상 보정
-            if (computedColor && computedColor.includes('rgba')) {
-              el.style.color = '#333333';
+          // 교육과정 섹션 찾기 및 모든 자식 요소에 색상 강제 적용
+          const allDivs = captureArea.querySelectorAll('div');
+          let coursesSection = null;
+          allDivs.forEach(div => {
+            if (div.textContent && div.textContent.includes('추천 교육과정')) {
+              // 가장 가까운 GlassCard 컨테이너 찾기
+              let parent = div;
+              while (parent && parent !== captureArea) {
+                if (parent.style && parent.style.borderBottom === '1px solid rgb(233, 236, 239)') {
+                  coursesSection = parent;
+                  break;
+                }
+                parent = parent.parentElement;
+              }
+              if (!coursesSection) coursesSection = div.parentElement;
             }
+          });
 
-            // 교육과정 관련 텍스트 강제 색상
-            if (text.includes('추천 교육과정') || text.includes('AI-') ||
-                text.includes('보험연수원') || text.includes('과정 확인하기')) {
-              el.style.color = '#333333';
+          // 교육과정 섹션 내 모든 요소에 색상 강제 적용
+          if (coursesSection) {
+            coursesSection.querySelectorAll('*').forEach(el => {
               el.style.opacity = '1';
-            }
-          });
+              el.style.color = '#333333';
+            });
 
-          // 교육과정 카드 배경 명확하게
-          captureArea.querySelectorAll('[class*="animate-card"]').forEach(el => {
-            el.style.backgroundColor = '#F8F9FA';
+            // 레벨 뱃지는 원래 색상 유지
+            coursesSection.querySelectorAll('span').forEach(el => {
+              const text = (el.textContent || '').trim();
+              if (text === '초급') {
+                el.style.backgroundColor = '#E6F4EA';
+                el.style.color = '#1B7D2C';
+              } else if (text === '중급') {
+                el.style.backgroundColor = '#E3F2FD';
+                el.style.color = '#1565C0';
+              } else if (text === '고급') {
+                el.style.backgroundColor = '#FFF3E0';
+                el.style.color = '#E65100';
+              }
+            });
+
+            // CTA 버튼 색상
+            coursesSection.querySelectorAll('a').forEach(el => {
+              if (el.textContent && el.textContent.includes('과정 확인하기')) {
+                el.style.color = '#FFFFFF';
+              }
+            });
+          }
+
+          // 전체 캡처 영역의 모든 텍스트 opacity 보정
+          captureArea.querySelectorAll('*').forEach(el => {
             el.style.opacity = '1';
-          });
-
-          // 레벨 뱃지 색상 유지
-          captureArea.querySelectorAll('span').forEach(el => {
-            const text = el.textContent || '';
-            if (text === '초급') {
-              el.style.backgroundColor = '#E6F4EA';
-              el.style.color = '#1B7D2C';
-            } else if (text === '중급') {
-              el.style.backgroundColor = '#E3F2FD';
-              el.style.color = '#1565C0';
-            } else if (text === '고급') {
-              el.style.backgroundColor = '#FFF3E0';
-              el.style.color = '#E65100';
-            }
           });
         },
       });
