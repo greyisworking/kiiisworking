@@ -20,7 +20,7 @@
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dom-to-image-more@3/dist/dom-to-image-more.min.js"></script>
   <script>
     // Kakao SDK 초기화 (앱키는 실제 값으로 교체 필요)
     Kakao.init('2c07d28ea3a3089555ad56e38b16ca85');
@@ -392,126 +392,37 @@ function ResultPage() {
 
   const handleSaveImage = async () => {
     setIsCapturing(true);
+    const shareSection = document.getElementById('share-buttons-section');
+
     try {
       const element = document.getElementById('result-capture-area');
       if (!element) return;
 
+      // 공유 버튼 섹션 숨기기
+      if (shareSection) shareSection.style.display = 'none';
+
       // 폰트 로딩 완료 대기
       await document.fonts.ready;
-
-      // 추가 대기 (폰트 렌더링 안정화)
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      const canvas = await html2canvas(element, {
+      // dom-to-image-more로 캡처
+      const dataUrl = await domtoimage.toPng(element, {
+        quality: 1,
         scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: null, // 그라데이션 배경 유지
-        logging: false,
-        scrollY: -window.scrollY,
-        scrollX: 0,
-        windowWidth: element.scrollWidth,
-        windowHeight: element.scrollHeight,
-        onclone: (clonedDoc) => {
-          // 폰트 강제 적용
-          const clonedBody = clonedDoc.body;
-          clonedBody.style.fontFamily = "'Pretendard Variable', 'Pretendard', -apple-system, 'Apple SD Gothic Neo', sans-serif";
-
-          const captureArea = clonedDoc.getElementById('result-capture-area');
-          if (!captureArea) return;
-
-          // 캡처 영역 배경 설정 (그라데이션 유지를 위해)
-          captureArea.style.background = '#FFFFFF';
-
-          // 모든 요소 순회
-          const allElements = captureArea.querySelectorAll('*');
-          allElements.forEach(el => {
-            // backdrop-filter 제거 (html2canvas 호환성)
-            el.style.backdropFilter = 'none';
-            el.style.webkitBackdropFilter = 'none';
-
-            // 폰트 강제 적용
-            el.style.fontFamily = "'Pretendard Variable', 'Pretendard', -apple-system, sans-serif";
-
-            // 투명 배경을 불투명으로 변환
-            const computedStyle = window.getComputedStyle(el);
-            const bgColor = computedStyle.backgroundColor;
-            if (bgColor && bgColor.includes('rgba') && !bgColor.includes('rgba(0, 0, 0, 0)')) {
-              // rgba를 rgb로 변환 (알파값 무시하고 불투명으로)
-              const match = bgColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
-              if (match) {
-                const [, r, g, b] = match;
-                el.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
-              }
-            }
-          });
-
-          // 교육과정 섹션 찾기 및 모든 자식 요소에 색상 강제 적용
-          const allDivs = captureArea.querySelectorAll('div');
-          let coursesSection = null;
-          allDivs.forEach(div => {
-            if (div.textContent && div.textContent.includes('추천 교육과정')) {
-              // 가장 가까운 GlassCard 컨테이너 찾기
-              let parent = div;
-              while (parent && parent !== captureArea) {
-                if (parent.style && parent.style.borderBottom === '1px solid rgb(233, 236, 239)') {
-                  coursesSection = parent;
-                  break;
-                }
-                parent = parent.parentElement;
-              }
-              if (!coursesSection) coursesSection = div.parentElement;
-            }
-          });
-
-          // 교육과정 섹션 내 모든 요소에 색상 강제 적용
-          if (coursesSection) {
-            coursesSection.querySelectorAll('*').forEach(el => {
-              el.style.opacity = '1';
-              el.style.color = '#333333';
-            });
-
-            // 레벨 뱃지는 원래 색상 유지
-            coursesSection.querySelectorAll('span').forEach(el => {
-              const text = (el.textContent || '').trim();
-              if (text === '초급') {
-                el.style.backgroundColor = '#E6F4EA';
-                el.style.color = '#1B7D2C';
-              } else if (text === '중급') {
-                el.style.backgroundColor = '#E3F2FD';
-                el.style.color = '#1565C0';
-              } else if (text === '고급') {
-                el.style.backgroundColor = '#FFF3E0';
-                el.style.color = '#E65100';
-              }
-            });
-
-            // CTA 버튼 색상
-            coursesSection.querySelectorAll('a').forEach(el => {
-              if (el.textContent && el.textContent.includes('과정 확인하기')) {
-                el.style.color = '#FFFFFF';
-              }
-            });
-          }
-
-          // 전체 캡처 영역의 모든 텍스트 opacity 보정
-          captureArea.querySelectorAll('*').forEach(el => {
-            el.style.opacity = '1';
-          });
-        },
+        style: { transform: 'none' }
       });
 
       // 다운로드 트리거
       const link = document.createElement('a');
       link.download = `AI준비도_${t.typeName}_결과.png`;
-      link.href = canvas.toDataURL('image/png', 1.0);
-      document.body.appendChild(link);
+      link.href = dataUrl;
       link.click();
-      document.body.removeChild(link);
     } catch (err) {
       console.error('이미지 저장 실패:', err);
       alert('이미지 저장에 실패했습니다. 다시 시도해주세요.');
     } finally {
+      // 공유 버튼 섹션 복원
+      if (shareSection) shareSection.style.display = '';
       setIsCapturing(false);
     }
   };
@@ -802,7 +713,7 @@ function ResultPage() {
         {/* ─── CAPTURE AREA END ─── */}
 
           {/* ─── SHARE ─── */}
-          <div style={{ padding: "2px 4px 0" }}>
+          <div id="share-buttons-section" style={{ padding: "2px 4px 0" }}>
             {/* 이미지 저장 버튼 */}
             <button onClick={handleSaveImage} disabled={isCapturing} className="btn-hover" style={{
               width: "100%", padding: "16px 0", borderRadius: 16,
