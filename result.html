@@ -20,6 +20,7 @@
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script>
     // Kakao SDK 초기화 (앱키는 실제 값으로 교체 필요)
     Kakao.init('2c07d28ea3a3089555ad56e38b16ca85');
@@ -53,6 +54,9 @@
     .btn-hover{transition:all 0.2s ease}
     .btn-hover:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.12)}
     .btn-hover:active{transform:scale(0.98) translateY(0)}
+
+    /* Spinner Animation */
+    @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
   </style>
 </head>
 <body>
@@ -179,6 +183,71 @@ const industryStats = [
   { label: "IT예산 AI 비중", value: "67% 자동화" },
 ];
 
+/* ── 교육과정 데이터 ── */
+const allCourses = [
+  // 초급
+  { id: 'marketing', code: 'AI-마케팅', name: '생성형 AI로 실시간 트렌드 따라잡기', level: '초급', dates: ['2026-03-16'], duration: '1일 7H' },
+  { id: 'docs', code: 'AI-문서작성', name: '생성형 AI로 보고서 작성 자동화하기', level: '초급', dates: ['2026-03-23', '2026-09-14'], duration: '2일 14H' },
+  { id: 'sales', code: 'AI-보험세일즈', name: 'AI Studio로 규제를 준수하는 나만의 홍보 페이지 만들기', level: '초급', dates: ['2026-04-07'], duration: '1일 7H' },
+  { id: 'agent', code: 'AI-Agent', name: 'Google Gems, Opal로 언제 어디서나 나만의 비서 만들기', level: '초급', dates: ['2026-05-19'], duration: '1일 7H' },
+  { id: 'data-basic', code: 'AI-데이터분석(초급)', name: 'ChatGPT로 코딩 없이 데이터 분석하기', level: '초급', dates: ['2026-06-16'], duration: '1일 7H' },
+  { id: 'ethics', code: 'AI-윤리', name: '보험사를 위한 AI 활용 윤리 이해부터 책임있는 활용까지', level: '초급', dates: ['2026-11-17'], duration: '1일 6H' },
+  { id: 'public-doc', code: 'AI-공공직무', name: '생성형 AI로 한글 공문서 작성 효율화하기', level: '초급', dates: ['2026-06-23', '2026-10-27'], duration: '1일 7H' },
+  { id: 'public-video', code: 'AI-공공직무', name: 'CapCut, Canva로 트렌디한 숏폼 영상 제작하기', level: '초급', dates: ['2026-07-07', '2026-11-03'], duration: '1일 7H' },
+  // 중급
+  { id: 'data-mid', code: 'AI-데이터분석(중급)', name: 'Copilot, GPT로 Excel 데이터 분석 효율화하기', level: '중급', dates: ['2026-04-20', '2026-10-19'], duration: '2일 14H' },
+  { id: 'insight', code: 'AI-인사이트', name: '보험산업 AI 동향 파악부터 보험업 AI 혁신서비스 기획까지', level: '중급', dates: ['2026-05-28'], duration: '1일 7H' },
+  // 고급
+  { id: 'leadership', code: 'AI-리더십', name: '중국 보험·AI 벤치마킹 연수 프로그램', level: '고급', dates: ['2026-11-11'], duration: '4일' },
+];
+
+// 타입별 추천 과정 ID 매핑
+const courseMapping = {
+  // AI Leader (type1): 중급 + 고급 전체
+  1: { ids: ['data-mid', 'insight', 'leadership'], tagline: '리더십과 전략적 AI 활용' },
+  // AI Ready (type2): 초급 심화 + 중급 전체
+  2: { ids: ['sales', 'agent', 'ethics', 'data-mid', 'insight'], tagline: '실행력을 키울 과정' },
+  // AI Exploring (type3): 초급 전체 + 중급 1개
+  3: { ids: ['marketing', 'docs', 'sales', 'agent', 'data-basic', 'public-doc', 'public-video', 'insight'], tagline: '탐색 단계에서 실무 적용으로' },
+  // AI Starting (type4): 초급 기초 3개
+  4: { ids: ['marketing', 'docs', 'data-basic'], tagline: 'AI 첫걸음에 딱 맞는 과정' },
+};
+
+// 오늘 날짜 이후 일정만 필터링하고 가장 가까운 일정순 정렬
+function getRecommendedCourses(typeId) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const mapping = courseMapping[typeId];
+  if (!mapping) return [];
+
+  const courses = allCourses
+    .filter(c => mapping.ids.includes(c.id))
+    .map(course => {
+      // 오늘 이후 가장 가까운 날짜 찾기
+      const futureDates = course.dates
+        .map(d => new Date(d))
+        .filter(d => d >= today)
+        .sort((a, b) => a - b);
+
+      if (futureDates.length === 0) return null;
+
+      const nextDate = futureDates[0];
+      const dateStr = `${nextDate.getMonth() + 1}.${nextDate.getDate()}`;
+
+      return {
+        ...course,
+        nextDate,
+        dateStr,
+        hasMoreDates: futureDates.length > 1,
+      };
+    })
+    .filter(c => c !== null)
+    .sort((a, b) => a.nextDate - b.nextDate);
+
+  return courses;
+}
+
 const KIIIS_URL = "https://www.in.or.kr";
 const BASE_URL = "https://kiiisworking.vercel.app";
 
@@ -255,7 +324,11 @@ function ResultPage() {
   const initialType = typeKeys.includes(typeParam) ? typeKeys.indexOf(typeParam) : 0;
 
   const [copied, setCopied] = useState(false);
+  const [isCapturing, setIsCapturing] = useState(false);
   const t = types[initialType];
+  const typeId = t.id;
+  const recommendedCourses = getRecommendedCourses(typeId);
+  const courseTagline = courseMapping[typeId]?.tagline || '';
   const journeyPos = [8, 33, 60, 88];
 
   // Update OG meta tags dynamically (for client-side, won't affect crawlers)
@@ -318,6 +391,31 @@ function ResultPage() {
     }
   };
 
+  const handleSaveImage = async () => {
+    setIsCapturing(true);
+    try {
+      const element = document.getElementById('result-capture-area');
+      if (!element) return;
+
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#F0F2F5',
+        logging: false,
+      });
+
+      const link = document.createElement('a');
+      link.download = `AI준비도_${t.typeName}_결과.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } catch (err) {
+      console.error('이미지 저장 실패:', err);
+      alert('이미지 저장에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsCapturing(false);
+    }
+  };
+
   return (
     <div style={{
       fontFamily: "'Pretendard Variable', 'Pretendard', -apple-system, 'Apple SD Gothic Neo', sans-serif",
@@ -338,6 +436,9 @@ function ResultPage() {
 
       {/* ═══ RESULT VIEW ═══ */}
       <div style={{ padding: "0 12px 36px" }}>
+
+        {/* ─── CAPTURE AREA START ─── */}
+        <div id="result-capture-area" style={{ background: "linear-gradient(180deg, #F0F2F5 0%, #E8EAEF 100%)", padding: "0 0 20px" }}>
 
           {/* ─── HERO ─── */}
           <GlassCard style={{
@@ -517,40 +618,53 @@ function ResultPage() {
             </GlassCard>
           )}
 
-          {/* ─── COURSES ─── */}
+          {/* ─── RECOMMENDED COURSES ─── */}
           <GlassCard>
             <Label>📚 추천 교육과정</Label>
-            <div style={{ fontSize: 12, color: "#999", marginTop: -10, marginBottom: 16 }}>취약 영역 기준 추천 · 보험연수원 정규과정</div>
+            <div style={{ fontSize: 12, color: "#999", marginTop: -10, marginBottom: 6 }}>{courseTagline}</div>
+            <div style={{ fontSize: 11, color: t.accent, marginBottom: 16, fontWeight: 500 }}>
+              ✨ 가까운 일정순 · 보험연수원 정규과정
+            </div>
 
-            {t.courses.map((c, i) => (
-              <div key={i} style={{
-                padding: "14px 16px",
-                background: "rgba(255,255,255,0.55)",
-                backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
-                borderRadius: 14, marginBottom: 8,
-                border: "1px solid rgba(255,255,255,0.5)",
-              }}>
-                <div style={{ display: "flex", gap: 6, marginBottom: 7, flexWrap: "wrap", alignItems: "center" }}>
-                  <span style={{
-                    fontSize: 11, fontWeight: 600,
-                    background: c.level === "초급" ? "rgba(47,158,68,0.10)" : c.level === "중급" ? "rgba(25,113,194,0.10)" : "rgba(232,89,12,0.10)",
-                    color: c.level === "초급" ? "#2B8A3E" : c.level === "중급" ? "#1864AB" : "#E8590C",
-                    borderRadius: 8, padding: "3px 10px",
-                  }}>{c.level}</span>
-                  <span style={{
-                    fontSize: 11, fontWeight: 600,
-                    background: t.accentSoft, color: t.accent,
-                    borderRadius: 8, padding: "3px 10px",
-                  }}>{c.match}</span>
-                  <span style={{ fontSize: 11, color: "#CED4DA", marginLeft: "auto" }}>{c.code}</span>
+            {recommendedCourses.length > 0 ? (
+              recommendedCourses.map((c, i) => (
+                <div key={c.id + i} className="animate-card" style={{
+                  padding: "14px 16px",
+                  background: "rgba(255,255,255,0.55)",
+                  backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
+                  borderRadius: 14, marginBottom: 10,
+                  border: "1px solid rgba(255,255,255,0.5)",
+                }}>
+                  <div style={{ display: "flex", gap: 6, marginBottom: 8, flexWrap: "wrap", alignItems: "center" }}>
+                    <span style={{
+                      fontSize: 11, fontWeight: 600,
+                      background: c.level === "초급" ? "rgba(47,158,68,0.10)" : c.level === "중급" ? "rgba(25,113,194,0.10)" : "rgba(232,89,12,0.10)",
+                      color: c.level === "초급" ? "#2B8A3E" : c.level === "중급" ? "#1864AB" : "#E8590C",
+                      borderRadius: 8, padding: "3px 10px",
+                    }}>{c.level}</span>
+                    <span style={{
+                      fontSize: 11, fontWeight: 600,
+                      background: "rgba(0,0,0,0.04)", color: "#666",
+                      borderRadius: 8, padding: "3px 10px",
+                    }}>📅 {c.dateStr}{c.hasMoreDates ? ' 외' : ''}</span>
+                    <span style={{
+                      fontSize: 11, fontWeight: 500,
+                      color: "#999",
+                    }}>{c.duration}</span>
+                  </div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#1A1A1A", lineHeight: 1.45, marginBottom: 4 }}>
+                    {c.name}
+                  </div>
+                  <div style={{ fontSize: 11, color: "#ADB5BD" }}>{c.code}</div>
                 </div>
-                <div style={{ fontSize: 14, fontWeight: 600, color: "#1A1A1A", lineHeight: 1.45 }}>
-                  {c.name}
-                </div>
+              ))
+            ) : (
+              <div style={{ textAlign: "center", padding: "20px 0", color: "#999", fontSize: 13 }}>
+                현재 예정된 교육 일정이 없습니다.
               </div>
-            ))}
+            )}
 
-            <a href={KIIIS_URL} target="_blank" rel="noopener noreferrer" style={{
+            <a href={KIIIS_URL} target="_blank" rel="noopener noreferrer" className="btn-hover" style={{
               display: "block", marginTop: 14, textAlign: "center",
               padding: "15px 0", background: t.accent,
               borderRadius: 14, color: "#FFF",
@@ -564,10 +678,38 @@ function ResultPage() {
             </div>
           </GlassCard>
 
+        </div>
+        {/* ─── CAPTURE AREA END ─── */}
+
           {/* ─── SHARE ─── */}
           <div style={{ padding: "2px 4px 0" }}>
+            {/* 이미지 저장 버튼 */}
+            <button onClick={handleSaveImage} disabled={isCapturing} className="btn-hover" style={{
+              width: "100%", padding: "16px 0", borderRadius: 16,
+              border: "none", cursor: isCapturing ? "wait" : "pointer",
+              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              color: "#FFF",
+              fontSize: 15, fontWeight: 700,
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+              boxShadow: "0 4px 20px rgba(102,126,234,0.35)",
+              marginBottom: 10,
+              opacity: isCapturing ? 0.7 : 1,
+              transition: "all 0.2s ease",
+            }}>
+              {isCapturing ? (
+                <>
+                  <svg width="18" height="18" viewBox="0 0 24 24" style={{ animation: "spin 1s linear infinite" }}>
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" fill="none" strokeDasharray="31.4" strokeDashoffset="10" strokeLinecap="round"/>
+                  </svg>
+                  이미지 생성 중...
+                </>
+              ) : (
+                <>📸 결과 이미지로 저장하기</>
+              )}
+            </button>
+
             {/* 카카오톡 공유 버튼 */}
-            <button onClick={handleKakaoShare} style={{
+            <button onClick={handleKakaoShare} className="btn-hover" style={{
               width: "100%", padding: "16px 0", borderRadius: 16,
               border: "none", cursor: "pointer",
               background: "#FEE500", color: "#1A1A1A",
