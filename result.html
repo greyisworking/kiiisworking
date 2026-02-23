@@ -28,14 +28,20 @@
   <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
     *{font-family:'Pretendard Variable','Pretendard',-apple-system,'Apple SD Gothic Neo',sans-serif;-webkit-tap-highlight-color:transparent;box-sizing:border-box}
-    /* 선택적 줄바꿈 방지 */
-    .section-title{white-space:nowrap}
-    .domain-name{white-space:nowrap}
-    .level-tag{white-space:nowrap}
-    .hero-badge{white-space:nowrap}
-    .course-meta{display:flex;flex-wrap:nowrap;align-items:center;gap:8px}
-    .course-name{word-break:keep-all;overflow-wrap:break-word}
     html,body{min-height:100vh;margin:0;padding:0;background:linear-gradient(180deg,#F0F2F5 0%,#E8EAEF 100%)}
+
+    /* 모바일 최적화 */
+    @media(max-width:480px){
+      .result-container{padding:0 8px!important}
+      .result-inner{padding:0 8px 36px!important}
+      .domain-row{font-size:13px!important}
+      .domain-score{font-size:16px!important}
+      .domain-avg{font-size:11px!important}
+      .level-tag{font-size:11px!important;padding:3px 8px!important}
+      .course-meta{font-size:11px!important;gap:6px!important}
+      .course-name{font-size:14px!important}
+      .glass-card{padding:16px 14px!important}
+    }
     #root{min-height:100vh;opacity:0;animation:pageIn 0.4s ease-out forwards}
     @keyframes pageIn{from{opacity:0}to{opacity:1}}
 
@@ -274,20 +280,20 @@ function DomainBar({ domain, accent }) {
   const weak = domain.weak;
   return (
     <div style={{ marginBottom: 20 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 7 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 15 }}>{domain.icon}</span>
-          <span className="domain-name" style={{ fontSize: 14, fontWeight: 600, color: "#1A1A1A" }}>{domain.name}</span>
+      <div className="domain-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 7 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <span style={{ fontSize: 14 }}>{domain.icon}</span>
+          <span style={{ fontSize: 14, fontWeight: 600, color: "#1A1A1A" }}>{domain.name}</span>
           {weak && (
             <span style={{
-              fontSize: 10.5, background: "rgba(224,49,49,0.08)", color: "#E03131",
-              borderRadius: 8, padding: "2px 8px", fontWeight: 600,
+              fontSize: 10, background: "rgba(224,49,49,0.08)", color: "#E03131",
+              borderRadius: 6, padding: "2px 6px", fontWeight: 600,
             }}>개선 필요</span>
           )}
         </div>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
-          <span style={{ fontSize: 12, color: "#ADB5BD" }}>평균 {domain.avg}</span>
-          <span style={{ fontSize: 18, fontWeight: 700, color: weak ? "#E03131" : accent }}>{domain.score}</span>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
+          <span className="domain-avg" style={{ fontSize: 11, color: "#ADB5BD" }}>평균 {domain.avg}</span>
+          <span className="domain-score" style={{ fontSize: 17, fontWeight: 700, color: weak ? "#E03131" : accent }}>{domain.score}</span>
         </div>
       </div>
       <div style={{ position: "relative", height: 8, background: "rgba(0,0,0,0.04)", borderRadius: 100 }}>
@@ -309,12 +315,12 @@ function DomainBar({ domain, accent }) {
 }
 
 function GlassCard({ children, style = {} }) {
-  return <div style={{ ...glass, padding: "20px 18px", marginBottom: 14, ...style }}>{children}</div>;
+  return <div className="glass-card" style={{ ...glass, padding: "20px 16px", marginBottom: 14, ...style }}>{children}</div>;
 }
 
 function Label({ children }) {
   return (
-    <div className="section-title" style={{ fontSize: 15, fontWeight: 700, color: "#1A1A1A", marginBottom: 14 }}>
+    <div style={{ fontSize: 15, fontWeight: 700, color: "#1A1A1A", marginBottom: 14 }}>
       {children}
     </div>
   );
@@ -442,16 +448,16 @@ function ResultPage() {
   };
 
   return (
-    <div style={{
+    <div className="result-container" style={{
       fontFamily: "'Pretendard Variable', 'Pretendard', -apple-system, 'Apple SD Gothic Neo', sans-serif",
-      maxWidth: 440, margin: "0 auto",
+      maxWidth: 440, width: "100%", margin: "0 auto",
       background: "linear-gradient(180deg, #F0F2F5 0%, #E8EAEF 100%)",
-      minHeight: "100vh",
+      minHeight: "100vh", padding: "0 16px",
     }}>
 
       {/* ─── HEADER ─── */}
       <div style={{
-        padding: "16px 20px 12px",
+        padding: "16px 4px 12px",
         display: "flex", justifyContent: "center", alignItems: "center",
       }}>
         <span style={{ fontSize: 11, letterSpacing: "0.08em", color: "#868E96", fontWeight: 600 }}>
@@ -460,7 +466,7 @@ function ResultPage() {
       </div>
 
       {/* ═══ RESULT VIEW ═══ */}
-      <div style={{ padding: "0 12px 36px" }}>
+      <div className="result-inner" style={{ padding: "0 0 36px" }}>
 
         {/* ─── CAPTURE AREA START ─── */}
         <div id="result-capture-area" style={{ background: "#FFFFFF", padding: 0 }}>
@@ -487,10 +493,11 @@ function ResultPage() {
 
             <div style={{ position: "relative", zIndex: 1, padding: "34px 24px 30px" }}>
               <div style={{ fontSize: 52, marginBottom: 10 }}>{t.emoji}</div>
-              <div className="hero-badge" style={{
+              <div style={{
                 display: "inline-block", fontSize: 11, fontWeight: 600,
                 color: t.accent, background: "rgba(255,255,255,0.9)",
                 padding: "5px 14px", borderRadius: 20, marginBottom: 12,
+                whiteSpace: "nowrap",
               }}>
                 {t.tier} · {t.score}
               </div>
@@ -675,37 +682,37 @@ function ResultPage() {
             {recommendedCourses.length > 0 ? (
               recommendedCourses.map((c, i) => (
                 <div key={c.id + i} className="animate-card" style={{
-                  padding: "16px 18px",
+                  padding: "14px 14px",
                   background: "#F8F9FA",
                   borderRadius: 12, marginBottom: 10,
                   border: "1px solid #E9ECEF",
                   width: "100%",
                 }}>
                   {/* 1줄: 수준 + 날짜 + 시간 */}
-                  <div className="course-meta" style={{ marginBottom: 10 }}>
+                  <div className="course-meta" style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10, flexWrap: "nowrap" }}>
                     <span className="level-tag" style={{
-                      fontSize: 12, fontWeight: 700,
+                      fontSize: 11, fontWeight: 700,
                       background: c.level === "초급" ? "#E6F4EA" : c.level === "중급" ? "#E3F2FD" : "#FFF3E0",
                       color: c.level === "초급" ? "#1B7D2C" : c.level === "중급" ? "#1565C0" : "#E65100",
-                      borderRadius: 6, padding: "4px 10px",
-                      flexShrink: 0,
+                      borderRadius: 5, padding: "3px 8px",
+                      flexShrink: 0, whiteSpace: "nowrap",
                     }}>{c.level}</span>
-                    <span style={{ fontSize: 12, color: "#495057", fontWeight: 500 }}>
+                    <span style={{ fontSize: 12, color: "#495057", fontWeight: 500, whiteSpace: "nowrap" }}>
                       {c.dateStr}{c.hasMoreDates ? ' 외' : ''}
                     </span>
-                    <span style={{ fontSize: 12, color: "#868E96" }}>
+                    <span style={{ fontSize: 12, color: "#868E96", whiteSpace: "nowrap" }}>
                       {c.duration}
                     </span>
                   </div>
                   {/* 2줄: 과목명 */}
                   <div className="course-name" style={{
-                    fontSize: 15, fontWeight: 700, color: "#212529",
-                    lineHeight: 1.5, marginBottom: 6,
+                    fontSize: 14, fontWeight: 700, color: "#212529",
+                    lineHeight: 1.45, marginBottom: 5,
                   }}>
                     {c.name}
                   </div>
                   {/* 3줄: 과목코드 */}
-                  <div style={{ fontSize: 12, color: "#868E96" }}>{c.code}</div>
+                  <div style={{ fontSize: 11, color: "#868E96" }}>{c.code}</div>
                 </div>
               ))
             ) : (
